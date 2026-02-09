@@ -214,16 +214,7 @@ export function useAuth() {
       });
       if (authError) throw authError;
       user.value = data?.user ?? null;
-      // If email confirmation is enabled, session can be null here -> avoid RLS error.
-      if (data?.session?.user) {
-        await supabase.from('profiles').upsert({
-          id: data.session.user.id,
-          email,
-          display_name: displayName || null,
-        });
-        await loadProfile(data.session.user.id);
-        await ensureProfile(data.session.user.id, email);
-      }
+      // Profile creation is handled by DB trigger; avoid client inserts here.
       return true;
     } catch (err) {
       error.value = err?.message ?? 'Inscription impossible';
@@ -319,14 +310,7 @@ async function ensureProfile(userId, email) {
       .select('display_name,email')
       .eq('id', userId)
       .single();
-    if (!data) {
-      await supabase.from('profiles').upsert({
-        id: userId,
-        email,
-        display_name: null,
-      });
-      return;
-    }
+    if (!data) return;
     // Do not auto-fill display_name; enforce user input in UI.
   } catch {
     // ignore ensure errors
