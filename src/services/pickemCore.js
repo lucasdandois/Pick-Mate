@@ -32,10 +32,6 @@ const PICKS_CONFIRMED_KEY = 'gentle-mates-pickem-confirmed';
 const PICKS_SCORE_KEY = 'gentle-mates-pickem-scores';
 let supabaseClient = null;
 
-function getToken() {
-  return import.meta.env.VITE_PANDASCORE_TOKEN;
-}
-
 function getSupabase() {
   if (supabaseClient) return supabaseClient;
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -69,15 +65,8 @@ function setCache(key, data) {
 }
 
 async function request(path, params) {
-  const token = getToken();
-  if (!token) {
-    throw new Error('VITE_PANDASCORE_TOKEN missing');
-  }
-
   const response = await fetch(buildUrl(path, params), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: {},
   });
 
   if (!response.ok) {
