@@ -23,52 +23,16 @@
 
         <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
           <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Profil</p>
-          <div v-if="needsDisplayName" class="mt-3">
-            <p class="text-xs text-zinc-400">Pseudo obligatoire pour continuer.</p>
-            <div class="mt-3 flex w-full gap-3 md:max-w-md">
-              <input
-                v-model="newDisplayName"
-                type="text"
-                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-emerald-400 focus:outline-none"
-                placeholder="Ton pseudo"
-              />
-              <button
-                type="button"
-                class="rounded-full bg-emerald-400 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black disabled:cursor-not-allowed disabled:opacity-60"
-                :disabled="loading"
-                @click="saveDisplayName"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-          <div v-else class="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-2">
               <span>Pseudo:</span>
               <span class="font-semibold text-white">{{ profile?.display_name || 'Non defini' }}</span>
-            </div>
-            <div class="flex w-full gap-3 md:w-auto md:min-w-[360px]">
-              <input
-                v-model="newDisplayName"
-                type="text"
-                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-emerald-400 focus:outline-none"
-                placeholder="Modifier le pseudo"
-                :disabled="loading"
-              />
-              <button
-                type="button"
-                class="rounded-full bg-emerald-400 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black disabled:cursor-not-allowed disabled:opacity-60"
-                :disabled="loading"
-                @click="saveDisplayName"
-              >
-                OK
-              </button>
             </div>
           </div>
           <p class="mt-3">Email: {{ profile?.email || user.email }}</p>
         </div>
 
-        <div v-if="!needsDisplayName" class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
           <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
           <div class="mt-4 flex flex-wrap items-center gap-4">
             <img :src="currentRank.image" :alt="currentRank.name" class="h-20 w-20 object-contain" />
@@ -79,7 +43,7 @@
           </div>
         </div>
 
-        <div v-if="!needsDisplayName" class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
           <div class="flex items-center justify-between">
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Historique des paris</p>
             <button
@@ -111,7 +75,7 @@
           </div>
         </div>
 
-        <div v-if="!needsDisplayName" class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
           <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Classement</p>
           <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="tier in tiers" :key="tier.name" class="rounded-xl border border-white/10 bg-black/40 p-3 text-center">
@@ -204,7 +168,7 @@ import { ref } from 'vue';
 import { computed } from 'vue';
 import { useAuth, usePickHistory } from '../services/pickemCore';
 
-const { user, profile, loading, error, signIn, signUp, signOut, updateProfile } = useAuth();
+const { user, profile, loading, error, signIn, signUp, signOut } = useAuth();
 const { history, totalPoints, loading: loadingHistory, error: historyError, refresh } = usePickHistory();
 
 const mode = ref('login');
@@ -212,7 +176,6 @@ const email = ref('');
 const password = ref('');
 const displayName = ref('');
 const success = ref('');
-const newDisplayName = ref('');
 
 const submit = async () => {
   success.value = '';
@@ -224,18 +187,6 @@ const submit = async () => {
   const ok = await signUp(email.value, password.value, displayName.value);
   if (ok) success.value = 'Compte cree. Verifie ton email si necessaire.';
 };
-
-const saveDisplayName = async () => {
-  success.value = '';
-  if (!newDisplayName.value) return;
-  const ok = await updateProfile(newDisplayName.value);
-  if (ok) {
-    success.value = 'Pseudo mis a jour.';
-    newDisplayName.value = '';
-  }
-};
-
-const needsDisplayName = computed(() => !profile.value?.display_name);
 
 const tiers = [
   { name: 'Iron 1', min: 0, range: '0-49', image: '/iron1.png' },
