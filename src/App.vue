@@ -1,0 +1,97 @@
+<template>
+  <div class="min-h-screen bg-[#070707] text-zinc-100">
+    <div class="fixed inset-0 pointer-events-none">
+      <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-400/15 blur-3xl animate-float-soft"></div>
+      <div class="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-fuchsia-500/10 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl animate-float-soft" style="animation-delay: 2s;"></div>
+    </div>
+
+    <nav class="relative z-20 border-b border-white/10 bg-black/60 backdrop-blur-xl">
+      <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+        <RouterLink to="/" class="flex items-center gap-3">
+          <div class="flex h-20 w-20 items-center justify-center  ">
+            <img
+              src="/public/Pickmate.png"
+              alt="Gentle Mates logo"
+              class="h-20 w-20 object-contain"
+            />
+          </div>
+          <div>
+            <p class="font-teko text-2xl uppercase tracking-widest text-white whitespace-nowrap">Pick'Mates</p>
+
+          </div>
+        </RouterLink>
+
+        <div class="hidden items-center gap-2 lg:flex">
+          <RouterLink
+            v-for="item in menuItems"
+            :key="item.name"
+            :to="item.href"
+            class="rounded-full border border-transparent px-4 py-2 text-sm uppercase tracking-widest text-zinc-300 transition hover:border-emerald-400/40 hover:text-white"
+          >
+            {{ item.name }}
+          </RouterLink>
+        </div>
+
+        <button class="lg:hidden" @click="toggleMenu" aria-label="Open menu">
+          <svg v-if="!mobileMenuOpen" class="h-6 w-6 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg v-else class="h-6 w-6 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div v-if="mobileMenuOpen" class="lg:hidden border-t border-white/10 bg-black/80 px-6 py-4">
+        <div class="flex flex-col gap-3">
+          <RouterLink
+            v-for="item in menuItems"
+            :key="item.name"
+            :to="item.href"
+            class="rounded-lg border border-white/10 px-4 py-2 text-sm uppercase tracking-widest text-zinc-200"
+            @click="toggleMenu"
+          >
+            {{ item.name }}
+          </RouterLink>
+        </div>
+      </div>
+    </nav>
+
+    <main class="relative z-10">
+      <RouterView />
+    </main>
+
+    <footer class="relative z-10 mt-20 border-t border-white/10 bg-black/60">
+      <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 py-12 md:grid-cols-3">
+        <div>
+          <p class="font-teko text-xl uppercase tracking-[0.2em] text-white">Gentle Mates Pick'em</p>
+          <p class="mt-3 text-sm text-zinc-400">
+            Le hub Pick'em de Gentle Mates : prono, calendrier, resultats et stats.
+          </p>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">Navigation</p>
+          <div class="mt-3 flex flex-col gap-2 text-sm text-zinc-300">
+            <RouterLink to="/">Accueil</RouterLink>
+            <RouterLink to="/matches">Matchs</RouterLink>
+            <RouterLink to="/matches">Calendrier</RouterLink>
+            <RouterLink to="/results">Resultats</RouterLink>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">Source</p>
+          <p class="mt-3 text-sm text-zinc-400">Donnees PandaScore API</p>
+          <p class="text-xs text-zinc-500">VITE_PANDASCORE_TOKEN requis</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup>
+import { RouterLink, RouterView } from 'vue-router';
+import { useAppShell } from './services/pickemCore';
+
+const { mobileMenuOpen, menuItems, toggleMenu } = useAppShell();
+</script>
