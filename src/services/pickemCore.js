@@ -37,7 +37,13 @@ function getSupabase() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     throw new Error('Supabase env missing');
   }
-  supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  });
   return supabaseClient;
 }
 
@@ -234,24 +240,10 @@ export function useAuth() {
         return false;
       }
       const supabase = getSupabase();
-      const { data: existing } = await supabase
-        .from('profiles')
-        .select('display_name_updated_at')
-        .eq('id', user.value.id)
-        .single();
-      if (existing?.display_name_updated_at) {
-        const last = new Date(existing.display_name_updated_at);
-        const next = addMonths(last, 9);
-        if (Date.now() < next.getTime()) {
-          error.value = 'Pseudo modifiable tous les 9 mois.';
-          return false;
-        }
-      }
       const { error: updateError } = await supabase.from('profiles').upsert({
         id: user.value.id,
         email: user.value.email,
         display_name: displayName || null,
-        display_name_updated_at: new Date().toISOString(),
       });
       if (updateError) throw updateError;
       await loadProfile(user.value.id);
@@ -568,6 +560,14 @@ export function isMatchInPast(match) {
   const beginAt = match?.begin_at;
   if (!beginAt) return false;
   return new Date(beginAt).getTime() < Date.now();
+}
+
+export function isMatchStarted(match) {
+  const status = (match?.status || '').toLowerCase();
+  if (status === 'running' || status === 'in_progress' || status === 'live') return true;
+  const beginAt = match?.begin_at;
+  if (!beginAt) return false;
+  return new Date(beginAt).getTime() <= Date.now();
 }
 
 export function useMonthlyMatches() {

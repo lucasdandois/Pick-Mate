@@ -87,7 +87,7 @@
             :class="picks[match.id] === opponent.id
               ? 'border-emerald-400 bg-emerald-400 text-black'
               : 'border-white/10 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-            :disabled="locked || isMatchInPast(match)"
+            :disabled="locked || isMatchStarted(match)"
             @click="selectPick(match.id, opponent.id)"
           >
             <span>{{ opponent.name }}</span>
@@ -98,7 +98,7 @@
             :class="confirmed[match.id]
               ? 'border-emerald-400 bg-emerald-400 text-black'
               : 'border-emerald-400/60 text-emerald-200'"
-            :disabled="locked || !picks[match.id] || confirmed[match.id]"
+            :disabled="locked || !picks[match.id] || confirmed[match.id] || isMatchStarted(match)"
             @click="confirmPick(match.id)"
           >
             {{ confirmed[match.id] ? 'Valide' : 'Valider' }}
@@ -114,15 +114,15 @@
               :class="isScoreSelected(match, option)
                 ? 'border-emerald-400 bg-emerald-400 text-black'
                 : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-              :disabled="locked || confirmed[match.id]"
+              :disabled="locked || confirmed[match.id] || isMatchStarted(match)"
               @click="selectScorePick(match.id, option.value)"
             >
               {{ option.label }}
             </button>
           </div>
         </div>
-        <p v-if="isMatchInPast(match)" class="mt-3 text-xs uppercase tracking-[0.25em] text-zinc-500">
-          Match termine, picks verrouilles
+        <p v-if="isMatchStarted(match)" class="mt-3 text-xs uppercase tracking-[0.25em] text-zinc-500">
+          Match lance, picks verrouilles
         </p>
       </div>
       </div>
@@ -141,6 +141,7 @@ import {
   getSeriesBadges,
   getOpponents,
   isMatchInPast,
+  isMatchStarted,
   usePickemBoard,
   useCalendarFilters,
 } from '../services/pickemCore';

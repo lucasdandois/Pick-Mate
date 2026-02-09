@@ -47,7 +47,7 @@
               <span>Pseudo:</span>
               <span class="font-semibold text-white">{{ profile?.display_name || 'Non defini' }}</span>
             </div>
-            <div v-if="canEditPseudo" class="flex w-full gap-3 md:w-auto md:min-w-[360px]">
+            <div class="flex w-full gap-3 md:w-auto md:min-w-[360px]">
               <input
                 v-model="newDisplayName"
                 type="text"
@@ -64,13 +64,7 @@
                 OK
               </button>
             </div>
-            <p v-else class="text-xs text-zinc-500">
-              Modification du pseudo verrouillee.
-            </p>
           </div>
-          <p v-if="!needsDisplayName && !canEditPseudo && nextChangeDate" class="mt-2 text-xs text-zinc-500">
-            Prochaine modification possible le {{ nextChangeDate.toLocaleDateString('fr-FR') }}.
-          </p>
           <p class="mt-3">Email: {{ profile?.email || user.email }}</p>
         </div>
 
@@ -240,20 +234,6 @@ const saveDisplayName = async () => {
     newDisplayName.value = '';
   }
 };
-
-const nextChangeDate = computed(() => {
-  const raw = profile.value?.display_name_updated_at;
-  if (!raw) return null;
-  const last = new Date(raw);
-  const next = new Date(last);
-  next.setMonth(next.getMonth() + 9);
-  return next;
-});
-
-const canEditPseudo = computed(() => {
-  if (!nextChangeDate.value) return true;
-  return Date.now() >= nextChangeDate.value.getTime();
-});
 
 const needsDisplayName = computed(() => !profile.value?.display_name);
 
