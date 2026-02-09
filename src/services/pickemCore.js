@@ -214,14 +214,15 @@ export function useAuth() {
       });
       if (authError) throw authError;
       user.value = data?.user ?? null;
-      if (user.value) {
+      // If email confirmation is enabled, session can be null here -> avoid RLS error.
+      if (data?.session?.user) {
         await supabase.from('profiles').upsert({
-          id: user.value.id,
+          id: data.session.user.id,
           email,
           display_name: displayName || null,
         });
-        await loadProfile(user.value.id);
-        await ensureProfile(user.value.id, email);
+        await loadProfile(data.session.user.id);
+        await ensureProfile(data.session.user.id, email);
       }
       return true;
     } catch (err) {
