@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { createClient } from '@supabase/supabase-js';
 
-const API_BASE = 'https://api.pandascore.co';
+const API_BASE = '/api/pandascore?path=';
 const DEFAULT_PER_PAGE = 8;
 const TEAM_ID = import.meta.env.VITE_GM_TEAM_ID;
 const TEAM_IDS = import.meta.env.VITE_GM_TEAM_IDS;
@@ -46,7 +46,7 @@ function getSupabase() {
 }
 
 function buildUrl(path, params = {}) {
-  const url = new URL(`${API_BASE}${path}`);
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
   Object.entries(params).forEach(([key, value]) => {
     if (value === undefined || value === null || value === '') return;
     url.searchParams.set(key, value);
