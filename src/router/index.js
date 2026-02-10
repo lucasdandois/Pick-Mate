@@ -4,6 +4,7 @@ import MatchesView from '../views/MatchesView.vue';
 import ResultsView from '../views/ResultsView.vue';
 import PickemView from '../views/PickemView.vue';
 import LoginView from '../views/LoginView.vue';
+import LeaderboardView from '../views/LeaderboardView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,6 +14,7 @@ const router = createRouter({
     { path: '/results', name: 'results', component: ResultsView },
     { path: '/pickem', name: 'pickem', component: PickemView },
     { path: '/login', name: 'login', component: LoginView },
+    { path: '/leaderboard', name: 'leaderboard', component: LeaderboardView },
   ],
 });
 

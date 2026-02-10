@@ -23,6 +23,7 @@ const MENU_ITEMS = [
   { name: 'Calendrier', href: '/matches' },
   { name: "Pick'em", href: '/pickem' },
   { name: 'Resultats', href: '/results' },
+  { name: 'Classement', href: '/leaderboard' },
   { name: 'Connexion', href: '/login' },
 ];
 
@@ -446,6 +447,7 @@ export function usePickHistory() {
   const picks = ref(loadPicks());
   const confirmed = ref(loadConfirmedPicks());
   const scorePicks = ref(loadScorePicks());
+  let lastSyncedPoints = null;
 
   watch(picks, () => savePicks(picks.value), { deep: true });
   watch(confirmed, () => saveConfirmedPicks(confirmed.value), { deep: true });
@@ -476,7 +478,46 @@ export function usePickHistory() {
 
   const totalPoints = computed(() => history.value.reduce((sum, item) => sum + (item.points || 0), 0));
 
+  watch(totalPoints, async (points) => {
+    if (points === lastSyncedPoints) return;
+    const supabase = getSupabase();
+    const { data } = await supabase.auth.getSession();
+    const userId = data?.session?.user?.id;
+    if (!userId) return;
+    lastSyncedPoints = points;
+    await supabase.from('profiles').update({ total_points: points }).eq('id', userId);
+  });
+
   return { history, totalPoints, loading, error, refresh };
+}
+
+export function useLeaderboard(limit = 50) {
+  const players = ref([]);
+  const loading = ref(false);
+  const error = ref('');
+
+  const refresh = async () => {
+    loading.value = true;
+    error.value = '';
+    try {
+      const supabase = getSupabase();
+      const { data, error: queryError } = await supabase
+        .from('profiles')
+        .select('id, display_name, total_points')
+        .order('total_points', { ascending: false })
+        .limit(limit);
+      if (queryError) throw queryError;
+      players.value = data || [];
+    } catch (err) {
+      error.value = err?.message ?? 'Erreur classement';
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  onMounted(refresh);
+
+  return { players, loading, error, refresh };
 }
 
 export function useBrandInfo() {
