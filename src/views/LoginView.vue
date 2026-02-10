@@ -41,7 +41,7 @@
           >
             <div
               class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl"
-              :style="{ backgroundColor: currentRankColorGlow }"
+              :style="currentRankGlowStyle"
             ></div>
             <div
               class="pointer-events-none absolute inset-0"
@@ -327,10 +327,18 @@ const currentRankColorTextSoft = computed(() => `${currentRankColor.value}cc`);
 const currentRankRadialStyle = computed(() => ({
   background: `radial-gradient(circle at center, ${currentRankColor.value}26, rgba(0,0,0,0) 55%)`,
 }));
-const currentRankBorderWidth = computed(() => `${Math.max(1, currentRankTierNumber.value) * 2}px`);
+const currentRankGlowStyle = computed(() => {
+  if (currentRankBase.value === 'Iri') {
+    return {
+      background: 'radial-gradient(circle at center, rgba(192,132,252,0.35), rgba(245,158,11,0.25), rgba(0,0,0,0) 70%)',
+    };
+  }
+  return { backgroundColor: currentRankColorGlow.value };
+});
+const currentRankBorderWidth = computed(() => `${1 + Math.max(1, currentRankTierNumber.value)}px`);
 const currentRankRingOpacity = computed(() => {
   const tier = Math.max(1, currentRankTierNumber.value);
-  return Math.min(0.85, 0.35 + tier * 0.12);
+  return Math.min(1, 0.6 + tier * 0.15);
 });
 const currentRankRingStyle = computed(() => ({
   borderColor: currentRankColorSoft.value,
