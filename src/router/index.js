@@ -8,6 +8,7 @@ import LeaderboardView from '../views/LeaderboardView.vue';
 import ReglementView from '../views/ReglementView.vue';
 import ConditionsView from '../views/ConditionsView.vue';
 import ConfidentialiteView from '../views/ConfidentialiteView.vue';
+import AvertissementView from '../views/AvertissementView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,7 @@ const router = createRouter({
     { path: '/reglement', name: 'reglement', component: ReglementView },
     { path: '/conditions', name: 'conditions', component: ConditionsView },
     { path: '/confidentialite', name: 'confidentialite', component: ConfidentialiteView },
+    { path: '/avertissement', name: 'avertissement', component: AvertissementView },
   ],
 });
 

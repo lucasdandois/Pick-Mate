@@ -85,6 +85,7 @@
             <RouterLink to="/reglement">Reglement</RouterLink>
             <RouterLink to="/conditions">Conditions d'utilisation</RouterLink>
             <RouterLink to="/confidentialite">Politique de confidentialite</RouterLink>
+            <RouterLink to="/avertissement">Avertissement</RouterLink>
           </div>
           <p class="mt-4 text-sm text-zinc-400">Donnees PandaScore API</p>
         </div>
