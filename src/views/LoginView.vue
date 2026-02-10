@@ -361,12 +361,7 @@ const currentRankCardBorderStyle = computed(() => {
   if (currentRankBase.value === 'Iri') {
     return {
       borderWidth: '2px',
-      borderColor: 'transparent',
-      borderRadius: '1rem',
-      backgroundImage:
-        'linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.4), rgba(0,0,0,0.2)), linear-gradient(120deg, rgba(192,132,252,0.9), rgba(245,158,11,0.9))',
-      backgroundOrigin: 'border-box',
-      backgroundClip: 'padding-box, border-box',
+      borderColor: 'rgba(230,150,160,0.9)',
     };
   }
   return { borderColor: currentRankColorBorder.value };
