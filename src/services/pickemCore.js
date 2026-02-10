@@ -31,6 +31,7 @@ const TEAM_NAME = 'Gentle Mates';
 const PICKS_STORAGE_KEY = 'gentle-mates-pickem-picks';
 const PICKS_CONFIRMED_KEY = 'gentle-mates-pickem-confirmed';
 const PICKS_SCORE_KEY = 'gentle-mates-pickem-scores';
+const PENDING_DISPLAY_NAME_KEY = 'gentle-mates-pending-display-name';
 let supabaseClient = null;
 
 function getSupabase() {
@@ -55,6 +56,20 @@ function buildUrl(path, params = {}) {
     url.searchParams.set(key, value);
   });
   return url.toString();
+}
+
+function normalizeDisplayName(value) {
+  const trimmed = String(value || '').trim();
+  if (!trimmed) return '';
+  const withoutPrefix = trimmed.replace(/^m8[\s-_]*/i, '').trim();
+  if (!withoutPrefix) return '';
+  return `M8 ${withoutPrefix}`;
+}
+
+export function formatDisplayName(value) {
+  const normalized = normalizeDisplayName(value);
+  if (normalized) return normalized;
+  return value || 'Non defini';
 }
 
 function getCache(key) {
@@ -189,6 +204,7 @@ export function useAuth() {
       if (user.value) {
         await loadProfile(user.value.id);
         await ensureProfile(user.value.id, email);
+        await applyPendingDisplayName(email);
       }
       return true;
     } catch (err) {
@@ -203,6 +219,11 @@ export function useAuth() {
     loading.value = true;
     error.value = '';
     try {
+      const normalized = normalizeDisplayName(displayName);
+      if (!normalized) {
+        error.value = 'Pseudo obligatoire.';
+        return false;
+      }
       const supabase = getSupabase();
       const { data, error: authError } = await supabase.auth.signUp({
         email,
@@ -211,10 +232,12 @@ export function useAuth() {
       if (authError) throw authError;
       user.value = data?.user ?? null;
       // If a session exists (email confirmation disabled), store display_name immediately.
-      if (data?.session?.user && displayName) {
+      if (data?.session?.user && normalized) {
         user.value = data.session.user;
-        await updateProfile(displayName);
+        await updateProfile(normalized);
         await loadProfile(user.value.id);
+      } else {
+        storePendingDisplayName(email, normalized);
       }
       return true;
     } catch (err) {
@@ -241,7 +264,8 @@ export function useAuth() {
     error.value = '';
     try {
       if (!user.value) return false;
-      if (!displayName || !displayName.trim()) {
+      const normalized = normalizeDisplayName(displayName);
+      if (!normalized) {
         error.value = 'Pseudo obligatoire.';
         return false;
       }
@@ -249,7 +273,7 @@ export function useAuth() {
       const { error: updateError } = await supabase.from('profiles').upsert({
         id: user.value.id,
         email: user.value.email,
-        display_name: displayName || null,
+        display_name: normalized || null,
       });
       if (updateError) throw updateError;
       await loadProfile(user.value.id);
@@ -301,6 +325,31 @@ async function ensureProfile(userId, email) {
     // Do not auto-fill display_name; enforce user input in UI.
   } catch {
     // ignore ensure errors
+  }
+}
+
+function storePendingDisplayName(email, displayName) {
+  try {
+    const raw = localStorage.getItem(PENDING_DISPLAY_NAME_KEY);
+    const map = raw ? JSON.parse(raw) : {};
+    map[email] = normalizeDisplayName(displayName);
+    localStorage.setItem(PENDING_DISPLAY_NAME_KEY, JSON.stringify(map));
+  } catch {
+    // ignore
+  }
+}
+
+async function applyPendingDisplayName(email) {
+  try {
+    const raw = localStorage.getItem(PENDING_DISPLAY_NAME_KEY);
+    const map = raw ? JSON.parse(raw) : {};
+    const pending = normalizeDisplayName(map[email]);
+    if (!pending) return;
+    await updateProfile(pending);
+    delete map[email];
+    localStorage.setItem(PENDING_DISPLAY_NAME_KEY, JSON.stringify(map));
+  } catch {
+    // ignore
   }
 }
 

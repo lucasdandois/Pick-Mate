@@ -74,15 +74,19 @@
           <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">Navigation</p>
           <div class="mt-3 flex flex-col gap-2 text-sm text-zinc-300">
             <RouterLink to="/">Accueil</RouterLink>
-            <RouterLink to="/matches">Matchs</RouterLink>
             <RouterLink to="/matches">Calendrier</RouterLink>
             <RouterLink to="/results">Resultats</RouterLink>
+            <RouterLink to="/pickem">Pick'em</RouterLink>
           </div>
         </div>
         <div>
-          <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">Source</p>
-          <p class="mt-3 text-sm text-zinc-400">Donnees PandaScore API</p>
-          <p class="text-xs text-zinc-500">VITE_PANDASCORE_TOKEN requis</p>
+          <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">Legal</p>
+          <div class="mt-3 flex flex-col gap-2 text-sm text-zinc-300">
+            <RouterLink to="/reglement">Reglement</RouterLink>
+            <RouterLink to="/conditions">Conditions d'utilisation</RouterLink>
+            <RouterLink to="/confidentialite">Politique de confidentialite</RouterLink>
+          </div>
+          <p class="mt-4 text-sm text-zinc-400">Donnees PandaScore API</p>
         </div>
       </div>
     </footer>

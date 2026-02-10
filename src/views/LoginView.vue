@@ -6,7 +6,7 @@
           <div>
             <p class="text-xs uppercase tracking-[0.4em] text-emerald-300/80">Profil</p>
             <h2 class="mt-3 font-teko text-4xl uppercase text-white">
-              Bienvenue {{ profile?.display_name || user.email }}
+              Bienvenue {{ profile?.display_name ? formatDisplayName(profile.display_name) : user.email }}
             </h2>
             <p class="mt-4 text-sm text-zinc-300">
               Tes informations sont stockees dans la base de donnees.
@@ -26,7 +26,7 @@
           <div class="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-2">
               <span>Pseudo:</span>
-              <span class="font-semibold text-white">{{ profile?.display_name || 'Non defini' }}</span>
+              <span class="font-semibold text-white">{{ formatDisplayName(profile?.display_name) }}</span>
             </div>
           </div>
           <p class="mt-3">Email: {{ profile?.email || user.email }}</p>
@@ -174,6 +174,7 @@
               class="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-emerald-400 focus:outline-none"
               placeholder="Lucas"
             />
+            <p v-if="displayNameError" class="mt-2 text-xs text-red-300">{{ displayNameError }}</p>
           </div>
 
           <button
@@ -193,9 +194,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { computed } from 'vue';
-import { useAuth, usePickHistory } from '../services/pickemCore';
+import { computed, ref } from 'vue';
+import { formatDisplayName, useAuth, usePickHistory } from '../services/pickemCore';
 
 const { user, profile, loading, error, signIn, signUp, signOut } = useAuth();
 const { history, totalPoints, loading: loadingHistory, error: historyError, refresh } = usePickHistory();
@@ -205,9 +205,11 @@ const email = ref('');
 const password = ref('');
 const displayName = ref('');
 const success = ref('');
+const submitAttempted = ref(false);
 
 const submit = async () => {
   success.value = '';
+  submitAttempted.value = true;
   if (mode.value === 'login') {
     const ok = await signIn(email.value, password.value);
     if (ok) success.value = 'Connexion reussie.';
@@ -259,6 +261,13 @@ const tiers = [
 const displayedPoints = computed(() => {
   const dbPoints = profile.value?.total_points;
   return Number.isFinite(dbPoints) ? dbPoints : totalPoints.value || 0;
+});
+
+const displayNameError = computed(() => {
+  if (mode.value !== 'signup') return '';
+  if (!submitAttempted.value) return '';
+  if (displayName.value && displayName.value.trim()) return '';
+  return 'Pseudo obligatoire.';
 });
 
 const currentRank = computed(() => {
