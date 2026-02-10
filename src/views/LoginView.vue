@@ -35,20 +35,18 @@
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
             <p class="text-xs text-zinc-400">Points: {{ displayedPoints }}</p>
           </div>
-          <div
-            class="relative mt-5 overflow-hidden rounded-2xl border bg-gradient-to-br from-black/70 via-black/40 to-emerald-500/10 p-4 sm:p-5"
-            :class="currentRankBorderClass"
-          >
-            <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl" :class="currentRankGlowClass"></div>
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-black/40 sm:h-16 sm:w-16">
-                <img :src="currentRank.image" :alt="currentRank.name" class="h-16 w-16 object-contain sm:h-12 sm:w-12" />
+          <div class="relative mt-5 overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-black/80 via-black/40 to-emerald-500/20 p-5 text-center sm:p-6">
+            <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-400/20 blur-3xl"></div>
+            <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.18),rgba(0,0,0,0)_55%)]"></div>
+            <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
+              <p class="text-[11px] uppercase tracking-[0.3em] text-emerald-200/80">Rang atteint</p>
+              <div class="relative flex h-28 w-28 items-center justify-center sm:h-32 sm:w-32">
+                <div class="absolute inset-0 rounded-full border border-emerald-400/40 blur-sm"></div>
+                <div class="absolute inset-2 rounded-full border border-emerald-300/40 animate-pulse"></div>
+                <img :src="currentRank.image" :alt="currentRank.name" class="relative h-20 w-20 object-contain sm:h-24 sm:w-24" />
               </div>
-              <div>
-                <p class="text-base font-semibold" :class="currentRankTextClass">{{ currentRank.name }}</p>
-                <p class="text-xs text-zinc-300">Progression du classement</p>
-                <p class="mt-2 text-[11px] uppercase tracking-[0.3em] text-zinc-500">Rang atteint</p>
-              </div>
+              <p class="text-xl font-semibold text-emerald-200 sm:text-2xl">{{ currentRank.name }}</p>
+              <p class="text-xs text-zinc-300">Progression du classement</p>
             </div>
           </div>
           <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6">
@@ -58,7 +56,7 @@
                 v-for="tier in currentGroup.tiers"
                 :key="tier.name"
                 class="flex flex-col items-center gap-2 rounded-lg border border-white/10 p-3 text-center sm:p-4"
-                :class="tier.name === currentRank.name ? currentRankBorderClass : ''"
+                :class="tier.name === currentRank.name ? 'border-emerald-400/60' : ''"
               >
                 <img
                   :src="tier.image"
@@ -68,7 +66,7 @@
                 />
                 <p
                   class="text-[9px] uppercase tracking-[0.2em] sm:text-[10px]"
-                  :class="tier.name === currentRank.name ? currentRankTextClass : 'text-zinc-400'"
+                  :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
                 >
                   {{ tier.name }}
                 </p>
