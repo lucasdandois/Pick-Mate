@@ -72,6 +72,14 @@ export function formatDisplayName(value) {
   return value || 'Non defini';
 }
 
+function getDisplayNameError(err) {
+  const message = err?.message || '';
+  if (message.includes('profiles_display_name_unique') || message.toLowerCase().includes('duplicate')) {
+    return 'Pseudo deja utilise.';
+  }
+  return null;
+}
+
 function getCache(key) {
   const entry = memoryCache.get(key);
   if (!entry) return null;
@@ -242,7 +250,7 @@ export function useAuth() {
       }
       return true;
     } catch (err) {
-      error.value = err?.message ?? 'Inscription impossible';
+      error.value = getDisplayNameError(err) || err?.message || 'Inscription impossible';
       return false;
     } finally {
       loading.value = false;
@@ -281,7 +289,7 @@ export function useAuth() {
       await loadProfile(user.value.id);
       return true;
     } catch (err) {
-      error.value = err?.message ?? 'Mise a jour impossible';
+      error.value = getDisplayNameError(err) || err?.message || 'Mise a jour impossible';
       return false;
     } finally {
       loading.value = false;
