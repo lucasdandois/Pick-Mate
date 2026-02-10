@@ -79,7 +79,7 @@
           <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
         </div>
 
-        <div class="mt-4 grid gap-3 md:grid-cols-3">
+        <div class="mt-4 flex flex-col gap-3 md:grid md:grid-cols-3">
           <button
             v-for="opponent in getOpponents(match)"
             :key="opponent.id"
@@ -93,6 +93,23 @@
             <span>{{ opponent.name }}</span>
             <span class="text-xs text-black/70" v-if="picks[match.id] === opponent.id">Pick</span>
           </button>
+          <div class="order-3 md:order-none">
+            <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Score exact</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <button
+                v-for="option in getScoreOptions(match, picks[match.id])"
+                :key="option.label"
+                class="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
+                :class="isScoreSelected(match, option)
+                  ? 'border-emerald-300 bg-emerald-400 text-black ring-2 ring-emerald-300/60 shadow-lg shadow-emerald-400/30 scale-[1.03]'
+                  : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60 hover:shadow-md hover:shadow-emerald-400/20'"
+                :disabled="locked || confirmed[match.id] || isMatchStarted(match) || !picks[match.id]"
+                @click="selectScorePick(match.id, option.value)"
+              >
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
           <button
             class="rounded-xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
             :class="confirmed[match.id]
@@ -103,23 +120,6 @@
           >
             {{ confirmed[match.id] ? 'Valide' : 'Valider' }}
           </button>
-        </div>
-        <div class="mt-4">
-          <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Score exact</p>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <button
-              v-for="option in getScoreOptions(match)"
-              :key="option.label"
-              class="rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
-              :class="isScoreSelected(match, option)
-                ? 'border-emerald-300 bg-emerald-400 text-black ring-2 ring-emerald-300/60 shadow-lg shadow-emerald-400/30 scale-[1.03]'
-                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60 hover:shadow-md hover:shadow-emerald-400/20'"
-              :disabled="locked || confirmed[match.id] || isMatchStarted(match)"
-              @click="selectScorePick(match.id, option.value)"
-            >
-              {{ option.label }}
-            </button>
-          </div>
         </div>
         <p v-if="isMatchStarted(match)" class="mt-3 text-xs uppercase tracking-[0.25em] text-zinc-500">
           Match lance, picks verrouilles
@@ -197,7 +197,7 @@ const getGamePills = (match) => {
   return pills;
 };
 
-const getScoreOptions = (match) => {
+const getScoreOptions = (match, pickedTeamId) => {
   const opponents = getOpponents(match);
   if (opponents.length < 2) return [];
   const bestOf = match?.number_of_games || match?.games?.length || 3;
@@ -206,11 +206,21 @@ const getScoreOptions = (match) => {
     ? [[3, 0], [3, 1], [3, 2], [2, 3], [1, 3], [0, 3]]
     : [[2, 0], [2, 1], [1, 2], [0, 2]];
 
-  return pairs.map(([scoreA, scoreB]) => ({
+  const teamAId = opponents[0].id;
+  const teamBId = opponents[1].id;
+
+  const filteredPairs = pickedTeamId
+    ? pairs.filter(([scoreA, scoreB]) => {
+        const winnerId = scoreA === scoreB ? null : scoreA > scoreB ? teamAId : teamBId;
+        return winnerId === pickedTeamId;
+      })
+    : pairs;
+
+  return filteredPairs.map(([scoreA, scoreB]) => ({
     label: `${scoreA}-${scoreB}`,
     value: {
-      teamAId: opponents[0].id,
-      teamBId: opponents[1].id,
+      teamAId,
+      teamBId,
       scoreA,
       scoreB,
     },
