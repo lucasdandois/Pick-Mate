@@ -8,9 +8,7 @@
             <h2 class="mt-3 font-teko text-4xl uppercase text-white">
               Bienvenue {{ profile?.display_name ? formatDisplayName(profile.display_name) : user.email }}
             </h2>
-            <p class="mt-4 text-sm text-zinc-300">
-              Tes informations sont stockees dans la base de donnees.
-            </p>
+
           </div>
           <button
             type="button"
@@ -37,11 +35,20 @@
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
             <p class="text-xs text-zinc-400">Points: {{ displayedPoints }}</p>
           </div>
-          <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <img :src="currentRank.image" :alt="currentRank.name" class="h-20 w-20 object-contain sm:h-16 sm:w-16" />
-            <div>
-              <p class="text-base font-semibold text-white">{{ currentRank.name }}</p>
-              <p class="text-xs text-zinc-400">Progression du classement</p>
+          <div
+            class="relative mt-5 overflow-hidden rounded-2xl border bg-gradient-to-br from-black/70 via-black/40 to-emerald-500/10 p-4 sm:p-5"
+            :class="currentRankBorderClass"
+          >
+            <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl" :class="currentRankGlowClass"></div>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-black/40 sm:h-16 sm:w-16">
+                <img :src="currentRank.image" :alt="currentRank.name" class="h-16 w-16 object-contain sm:h-12 sm:w-12" />
+              </div>
+              <div>
+                <p class="text-base font-semibold" :class="currentRankTextClass">{{ currentRank.name }}</p>
+                <p class="text-xs text-zinc-300">Progression du classement</p>
+                <p class="mt-2 text-[11px] uppercase tracking-[0.3em] text-zinc-500">Rang atteint</p>
+              </div>
             </div>
           </div>
           <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6">
@@ -51,6 +58,7 @@
                 v-for="tier in currentGroup.tiers"
                 :key="tier.name"
                 class="flex flex-col items-center gap-2 rounded-lg border border-white/10 p-3 text-center sm:p-4"
+                :class="tier.name === currentRank.name ? currentRankBorderClass : ''"
               >
                 <img
                   :src="tier.image"
@@ -60,7 +68,7 @@
                 />
                 <p
                   class="text-[9px] uppercase tracking-[0.2em] sm:text-[10px]"
-                  :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
+                  :class="tier.name === currentRank.name ? currentRankTextClass : 'text-zinc-400'"
                 >
                   {{ tier.name }}
                 </p>
@@ -279,6 +287,63 @@ const currentRank = computed(() => {
   }
   return result;
 });
+
+const rankStyleByBase = {
+  Iron: {
+    text: 'text-zinc-200',
+    border: 'border-zinc-400/60',
+    glow: 'bg-zinc-400/20',
+  },
+  Bronze: {
+    text: 'text-amber-300',
+    border: 'border-amber-400/60',
+    glow: 'bg-amber-400/20',
+  },
+  Silver: {
+    text: 'text-slate-200',
+    border: 'border-slate-300/70',
+    glow: 'bg-slate-200/20',
+  },
+  Gold: {
+    text: 'text-yellow-300',
+    border: 'border-yellow-300/70',
+    glow: 'bg-yellow-300/20',
+  },
+  Platine: {
+    text: 'text-cyan-300',
+    border: 'border-cyan-300/70',
+    glow: 'bg-cyan-300/20',
+  },
+  Emerald: {
+    text: 'text-emerald-300',
+    border: 'border-emerald-400/70',
+    glow: 'bg-emerald-400/20',
+  },
+  Rubi: {
+    text: 'text-rose-300',
+    border: 'border-rose-400/70',
+    glow: 'bg-rose-400/20',
+  },
+  Diamond: {
+    text: 'text-sky-200',
+    border: 'border-sky-300/70',
+    glow: 'bg-sky-300/20',
+  },
+  Iri: {
+    text: 'text-fuchsia-300',
+    border: 'border-fuchsia-400/70',
+    glow: 'bg-fuchsia-400/20',
+  },
+};
+
+const currentRankStyles = computed(() => {
+  const base = currentRank.value?.name?.split(' ')[0] || 'Iron';
+  return rankStyleByBase[base] || rankStyleByBase.Iron;
+});
+
+const currentRankTextClass = computed(() => currentRankStyles.value.text);
+const currentRankBorderClass = computed(() => currentRankStyles.value.border);
+const currentRankGlowClass = computed(() => currentRankStyles.value.glow);
 
 const groupedTiers = computed(() => {
   const groups = new Map();
