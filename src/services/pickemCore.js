@@ -229,18 +229,14 @@ export function useAuth() {
         email,
         password,
         options: {
-          data: {
-            display_name: normalized,
-          },
+          data: { display_name: normalized },
         },
       });
       if (authError) throw authError;
       user.value = data?.user ?? null;
-      // If a session exists (email confirmation disabled), store display_name immediately.
-      if (data?.session?.user && normalized) {
-        user.value = data.session.user;
+      if (data?.session?.user) {
         await updateProfile(normalized);
-        await loadProfile(user.value.id);
+        await loadProfile(data.session.user.id);
       } else {
         storePendingDisplayName(email, normalized);
       }
