@@ -44,6 +44,16 @@
               :style="{ backgroundColor: currentRankColorGlow }"
             ></div>
             <div
+              v-if="currentRankBase === 'Iri'"
+              class="pointer-events-none absolute -left-10 -bottom-10 h-36 w-36 rounded-full blur-3xl"
+              :style="{ backgroundColor: iriAccentOrange }"
+            ></div>
+            <div
+              v-if="currentRankBase === 'Iri'"
+              class="pointer-events-none absolute right-6 top-10 h-24 w-24 rounded-full blur-3xl"
+              :style="{ backgroundColor: iriAccentYellow }"
+            ></div>
+            <div
               class="pointer-events-none absolute inset-0"
               :style="currentRankRadialStyle"
             ></div>
@@ -307,7 +317,7 @@ const rankColorByBase = {
   Emerald: '#4ade80',
   Rubi: '#f472b6',
   Diamond: '#8bd3ff',
-  Iri: '#d7a1ff',
+  Iri: '#c084fc',
 };
 
 const currentRankBase = computed(() => currentRank.value?.name?.split(' ')[0] || 'Iron');
@@ -320,6 +330,8 @@ const currentRankColorTextSoft = computed(() => `${currentRankColor.value}cc`);
 const currentRankRadialStyle = computed(() => ({
   background: `radial-gradient(circle at center, ${currentRankColor.value}26, rgba(0,0,0,0) 55%)`,
 }));
+const iriAccentOrange = '#f59e0b66';
+const iriAccentYellow = '#facc1566';
 
 const groupedTiers = computed(() => {
   const groups = new Map();
