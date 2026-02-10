@@ -98,7 +98,7 @@
             :class="confirmed[match.id]
               ? 'border-emerald-400 bg-emerald-400 text-black'
               : 'border-emerald-400/60 text-emerald-200'"
-            :disabled="locked || !picks[match.id] || confirmed[match.id] || isMatchStarted(match)"
+            :disabled="locked || !picks[match.id] || !scorePicks[match.id] || confirmed[match.id] || isMatchStarted(match)"
             @click="confirmPick(match.id)"
           >
             {{ confirmed[match.id] ? 'Valide' : 'Valider' }}
@@ -112,8 +112,8 @@
               :key="option.label"
               class="rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
               :class="isScoreSelected(match, option)
-                ? 'border-emerald-400 bg-emerald-400 text-black'
-                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
+                ? 'border-emerald-300 bg-emerald-400 text-black ring-2 ring-emerald-300/60 shadow-lg shadow-emerald-400/30 scale-[1.03]'
+                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60 hover:shadow-md hover:shadow-emerald-400/20'"
               :disabled="locked || confirmed[match.id] || isMatchStarted(match)"
               @click="selectScorePick(match.id, option.value)"
             >
