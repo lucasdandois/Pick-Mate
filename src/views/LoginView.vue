@@ -33,12 +33,50 @@
         </div>
 
         <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
-          <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
-          <div class="mt-4 flex flex-wrap items-center gap-4">
-            <img :src="currentRank.image" :alt="currentRank.name" class="h-20 w-20 object-contain" />
+          <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
+            <p class="text-xs text-zinc-400">Points: {{ totalPoints }}</p>
+          </div>
+          <div class="mt-4 flex items-center gap-4">
+            <img :src="currentRank.image" :alt="currentRank.name" class="h-16 w-16 object-contain" />
             <div>
               <p class="text-base font-semibold text-white">{{ currentRank.name }}</p>
-              <p class="text-xs text-zinc-400">Points: {{ totalPoints }}</p>
+              <p class="text-xs text-zinc-400">Progression du classement</p>
+            </div>
+          </div>
+          <div class="mt-6 space-y-3">
+            <div
+              v-for="(tier, index) in tiers"
+              :key="tier.name"
+              class="flex items-center gap-3"
+            >
+              <div class="flex h-8 w-8 items-center justify-center">
+                <img :src="tier.image" :alt="tier.name" class="h-7 w-7 object-contain" />
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <p
+                    class="text-xs uppercase tracking-[0.2em]"
+                    :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
+                  >
+                    {{ tier.name }}
+                  </p>
+                  <p class="text-[10px] text-zinc-500">{{ tier.range }}</p>
+                </div>
+                <div class="mt-1 h-1.5 w-full rounded-full bg-white/10">
+                  <div
+                    class="h-1.5 rounded-full"
+                    :class="tier.name === currentRank.name ? 'bg-emerald-400' : 'bg-white/20'"
+                    :style="{ width: tier.name === currentRank.name ? '100%' : '40%' }"
+                  ></div>
+                </div>
+              </div>
+              <div class="flex h-full w-3 items-center justify-center">
+                <div
+                  v-if="index < tiers.length - 1"
+                  class="h-6 w-px bg-white/10"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
