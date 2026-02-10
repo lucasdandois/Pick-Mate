@@ -37,7 +37,7 @@
           </div>
           <div
             class="relative mt-5 overflow-hidden rounded-2xl border bg-gradient-to-br from-black/80 via-black/40 to-black/20 p-5 text-center sm:p-6"
-            :style="{ borderColor: currentRankColorBorder }"
+            :style="currentRankCardBorderStyle"
           >
             <div
               class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl"
@@ -50,7 +50,7 @@
             <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
               <div class="relative flex h-36 w-36 items-center justify-center sm:h-44 sm:w-44">
                 <div
-                  class="absolute inset-0 rounded-full border animate-pulse"
+                  class="absolute inset-0 rounded-full blur-[2px] animate-pulse"
                   :style="currentRankRingStyle"
                 ></div>
                 <img :src="currentRank.image" :alt="currentRank.name" class="relative h-28 w-28 object-contain sm:h-32 sm:w-32" />
@@ -330,21 +330,42 @@ const currentRankRadialStyle = computed(() => ({
 const currentRankGlowStyle = computed(() => {
   if (currentRankBase.value === 'Iri') {
     return {
-      background: 'radial-gradient(circle at center, rgba(192,132,252,0.35), rgba(245,158,11,0.25), rgba(0,0,0,0) 70%)',
+      background: 'radial-gradient(circle at center, rgba(192,132,252,0.3), rgba(245,158,11,0.45), rgba(0,0,0,0) 70%)',
     };
   }
   return { backgroundColor: currentRankColorGlow.value };
 });
-const currentRankBorderWidth = computed(() => `${1 + Math.max(1, currentRankTierNumber.value)}px`);
+const currentRankBorderWidth = computed(() => `${Math.max(1, currentRankTierNumber.value)}px`);
 const currentRankRingOpacity = computed(() => {
   const tier = Math.max(1, currentRankTierNumber.value);
   return Math.min(1, 0.6 + tier * 0.15);
 });
-const currentRankRingStyle = computed(() => ({
-  borderColor: currentRankColorSoft.value,
-  borderWidth: currentRankBorderWidth.value,
-  opacity: currentRankRingOpacity.value,
-}));
+const iriRingGradient = 'conic-gradient(from 140deg, rgba(192,132,252,0.9), rgba(245,158,11,0.9), rgba(192,132,252,0.9))';
+const currentRankRingStyle = computed(() => {
+  if (currentRankBase.value === 'Iri') {
+    return {
+      background: iriRingGradient,
+      WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+      mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+      opacity: currentRankRingOpacity.value,
+    };
+  }
+  return {
+    borderColor: currentRankColorSoft.value,
+    borderWidth: currentRankBorderWidth.value,
+    opacity: currentRankRingOpacity.value,
+  };
+});
+
+const currentRankCardBorderStyle = computed(() => {
+  if (currentRankBase.value === 'Iri') {
+    return {
+      borderWidth: '2px',
+      borderImage: 'linear-gradient(120deg, rgba(192,132,252,0.9), rgba(245,158,11,0.9)) 1',
+    };
+  }
+  return { borderColor: currentRankColorBorder.value };
+});
 const groupedTiers = computed(() => {
   const groups = new Map();
   tiers.forEach((tier) => {
