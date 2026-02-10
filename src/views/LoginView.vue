@@ -35,17 +35,28 @@
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
             <p class="text-xs text-zinc-400"></p>
           </div>
-          <div class="relative mt-5 overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-black/80 via-black/40 to-emerald-500/20 p-5 text-center sm:p-6">
-            <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-400/20 blur-3xl"></div>
-            <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.18),rgba(0,0,0,0)_55%)]"></div>
+          <div
+            class="relative mt-5 overflow-hidden rounded-2xl border bg-gradient-to-br from-black/80 via-black/40 to-black/20 p-5 text-center sm:p-6"
+            :style="{ borderColor: currentRankColorBorder }"
+          >
+            <div
+              class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl"
+              :style="{ backgroundColor: currentRankColorGlow }"
+            ></div>
+            <div
+              class="pointer-events-none absolute inset-0"
+              :style="currentRankRadialStyle"
+            ></div>
             <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
               <div class="relative flex h-32 w-32 items-center justify-center sm:h-40 sm:w-40">
-                <div class="absolute inset-0 rounded-full border border-emerald-400/40 blur-sm"></div>
-                <div class="absolute inset-2 rounded-full border border-emerald-300/40 animate-pulse"></div>
+                <div class="absolute inset-0 rounded-full border blur-sm" :style="{ borderColor: currentRankColorBorder }"></div>
+                <div class="absolute inset-2 rounded-full border animate-pulse" :style="{ borderColor: currentRankColorSoft }"></div>
                 <img :src="currentRank.image" :alt="currentRank.name" class="relative h-24 w-24 object-contain sm:h-28 sm:w-28" />
               </div>
-              <p class="text-xl font-semibold text-emerald-200 sm:text-2xl">{{ currentRank.name }}</p>
-              <p class="text-xs uppercase tracking-[0.3em] text-emerald-200/80">Points: {{ displayedPoints }}</p>
+              <p class="text-xl font-semibold sm:text-2xl" :style="{ color: currentRankColorText }">{{ currentRank.name }}</p>
+              <p class="text-xs uppercase tracking-[0.3em]" :style="{ color: currentRankColorTextSoft }">
+                Points: {{ displayedPoints }}
+              </p>
             </div>
           </div>
           <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6">
@@ -55,7 +66,8 @@
                 v-for="tier in currentGroup.tiers"
                 :key="tier.name"
                 class="flex flex-col items-center gap-2 rounded-lg border border-white/10 p-3 text-center sm:p-4"
-                :class="tier.name === currentRank.name ? 'border-emerald-400/60' : ''"
+                :class="tier.name === currentRank.name ? 'border-2' : ''"
+                :style="tier.name === currentRank.name ? { borderColor: currentRankColorBorder } : {}"
               >
                 <img
                   :src="tier.image"
@@ -65,7 +77,8 @@
                 />
                 <p
                   class="text-[9px] uppercase tracking-[0.2em] sm:text-[10px]"
-                  :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
+                  :class="tier.name === currentRank.name ? '' : 'text-zinc-400'"
+                  :style="tier.name === currentRank.name ? { color: currentRankColorText } : {}"
                 >
                   {{ tier.name }}
                 </p>
@@ -285,62 +298,28 @@ const currentRank = computed(() => {
   return result;
 });
 
-const rankStyleByBase = {
-  Iron: {
-    text: 'text-zinc-200',
-    border: 'border-zinc-400/60',
-    glow: 'bg-zinc-400/20',
-  },
-  Bronze: {
-    text: 'text-amber-300',
-    border: 'border-amber-400/60',
-    glow: 'bg-amber-400/20',
-  },
-  Silver: {
-    text: 'text-slate-200',
-    border: 'border-slate-300/70',
-    glow: 'bg-slate-200/20',
-  },
-  Gold: {
-    text: 'text-yellow-300',
-    border: 'border-yellow-300/70',
-    glow: 'bg-yellow-300/20',
-  },
-  Platine: {
-    text: 'text-cyan-300',
-    border: 'border-cyan-300/70',
-    glow: 'bg-cyan-300/20',
-  },
-  Emerald: {
-    text: 'text-emerald-300',
-    border: 'border-emerald-400/70',
-    glow: 'bg-emerald-400/20',
-  },
-  Rubi: {
-    text: 'text-rose-300',
-    border: 'border-rose-400/70',
-    glow: 'bg-rose-400/20',
-  },
-  Diamond: {
-    text: 'text-sky-200',
-    border: 'border-sky-300/70',
-    glow: 'bg-sky-300/20',
-  },
-  Iri: {
-    text: 'text-fuchsia-300',
-    border: 'border-fuchsia-400/70',
-    glow: 'bg-fuchsia-400/20',
-  },
+const rankColorByBase = {
+  Iron: '#b8b8b8',
+  Bronze: '#c58c58',
+  Silver: '#cfd6de',
+  Gold: '#f0c34a',
+  Platine: '#6fd6e8',
+  Emerald: '#4ade80',
+  Rubi: '#f472b6',
+  Diamond: '#8bd3ff',
+  Iri: '#d7a1ff',
 };
 
-const currentRankStyles = computed(() => {
-  const base = currentRank.value?.name?.split(' ')[0] || 'Iron';
-  return rankStyleByBase[base] || rankStyleByBase.Iron;
-});
-
-const currentRankTextClass = computed(() => currentRankStyles.value.text);
-const currentRankBorderClass = computed(() => currentRankStyles.value.border);
-const currentRankGlowClass = computed(() => currentRankStyles.value.glow);
+const currentRankBase = computed(() => currentRank.value?.name?.split(' ')[0] || 'Iron');
+const currentRankColor = computed(() => rankColorByBase[currentRankBase.value] || rankColorByBase.Iron);
+const currentRankColorBorder = computed(() => `${currentRankColor.value}99`);
+const currentRankColorSoft = computed(() => `${currentRankColor.value}66`);
+const currentRankColorGlow = computed(() => `${currentRankColor.value}33`);
+const currentRankColorText = computed(() => currentRankColor.value);
+const currentRankColorTextSoft = computed(() => `${currentRankColor.value}cc`);
+const currentRankRadialStyle = computed(() => ({
+  background: `radial-gradient(circle at center, ${currentRankColor.value}26, rgba(0,0,0,0) 55%)`,
+}));
 
 const groupedTiers = computed(() => {
   const groups = new Map();
