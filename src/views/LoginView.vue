@@ -2,7 +2,7 @@
   <section class="mx-auto max-w-4xl px-6 pb-24 pt-12">
     <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
       <div v-if="user" class="space-y-6">
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p class="text-xs uppercase tracking-[0.4em] text-emerald-300/80">Profil</p>
             <h2 class="mt-3 font-teko text-4xl uppercase text-white">
@@ -14,7 +14,7 @@
           </div>
           <button
             type="button"
-            class="rounded-full border border-white/20 px-6 py-3 text-xs uppercase tracking-[0.3em] text-white"
+            class="self-start rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.25em] text-white sm:px-6 sm:py-3 sm:text-xs sm:tracking-[0.3em]"
             @click="signOut"
           >
             Deconnexion
@@ -37,34 +37,34 @@
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
             <p class="text-xs text-zinc-400">Points: {{ displayedPoints }}</p>
           </div>
-          <div class="mt-4 flex items-center gap-4">
-            <img :src="currentRank.image" :alt="currentRank.name" class="h-16 w-16 object-contain" />
+          <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <img :src="currentRank.image" :alt="currentRank.name" class="h-20 w-20 object-contain sm:h-16 sm:w-16" />
             <div>
               <p class="text-base font-semibold text-white">{{ currentRank.name }}</p>
               <p class="text-xs text-zinc-400">Progression du classement</p>
             </div>
           </div>
-          <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-6">
+          <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6">
             <p class="text-[10px] uppercase tracking-[0.25em] text-zinc-500">{{ currentGroup.name }}</p>
-            <div class="mt-4 grid grid-cols-4 gap-4">
+            <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
               <div
                 v-for="tier in currentGroup.tiers"
                 :key="tier.name"
-                class="flex flex-col items-center gap-3 rounded-lg border border-white/10 p-4 text-center"
+                class="flex flex-col items-center gap-2 rounded-lg border border-white/10 p-3 text-center sm:p-4"
               >
                 <img
                   :src="tier.image"
                   :alt="tier.name"
                   class="object-contain"
-                  :class="tier.name === currentRank.name ? 'h-20 w-20' : 'h-16 w-16'"
+                  :class="tier.name === currentRank.name ? 'h-16 w-16 sm:h-20 sm:w-20' : 'h-12 w-12 sm:h-16 sm:w-16'"
                 />
                 <p
-                  class="text-[10px] uppercase tracking-[0.2em]"
+                  class="text-[9px] uppercase tracking-[0.2em] sm:text-[10px]"
                   :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
                 >
                   {{ tier.name }}
                 </p>
-                <p class="text-[10px] text-zinc-500">{{ tier.range }}</p>
+                <p class="text-[9px] text-zinc-500 sm:text-[10px]">{{ tier.range }}</p>
               </div>
             </div>
           </div>
