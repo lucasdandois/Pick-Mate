@@ -37,36 +37,23 @@
           </div>
           <div
             class="relative mt-5 overflow-hidden rounded-2xl border bg-gradient-to-br from-black/80 via-black/40 to-black/20 p-5 text-center sm:p-6"
-            :style="currentRankBorderStyle"
+            :style="{ borderColor: currentRankColorBorder }"
           >
             <div
               class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl"
               :style="{ backgroundColor: currentRankColorGlow }"
             ></div>
             <div
-              v-if="currentRankBase === 'Iri'"
-              class="pointer-events-none absolute -left-10 -bottom-10 h-36 w-36 rounded-full blur-3xl"
-              :style="{ backgroundColor: iriAccentOrange }"
-            ></div>
-            <div
-              v-if="currentRankBase === 'Iri'"
-              class="pointer-events-none absolute right-6 top-10 h-24 w-24 rounded-full blur-3xl"
-              :style="{ backgroundColor: iriAccentYellow }"
-            ></div>
-            <div
               class="pointer-events-none absolute inset-0"
               :style="currentRankRadialStyle"
             ></div>
             <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
-              <div class="relative flex h-32 w-32 items-center justify-center sm:h-40 sm:w-40">
+              <div class="relative flex h-36 w-36 items-center justify-center sm:h-44 sm:w-44">
                 <div
-                  v-for="ring in ringCount"
-                  :key="ring"
-                  class="absolute rounded-full"
-                  :class="ringClasses(ring)"
-                  :style="ringStyle(ring)"
+                  class="absolute inset-0 rounded-full border animate-pulse"
+                  :style="{ borderColor: currentRankColorSoft }"
                 ></div>
-                <img :src="currentRank.image" :alt="currentRank.name" class="relative h-24 w-24 object-contain sm:h-28 sm:w-28" />
+                <img :src="currentRank.image" :alt="currentRank.name" class="relative h-28 w-28 object-contain sm:h-32 sm:w-32" />
               </div>
               <p class="text-xl font-semibold sm:text-2xl" :style="{ color: currentRankColorText }">{{ currentRank.name }}</p>
               <p class="text-xs uppercase tracking-[0.3em]" :style="{ color: currentRankColorTextSoft }">
@@ -322,7 +309,7 @@ const rankColorByBase = {
   Emerald: '#4ade80',
   Rubi: '#f472b6',
   Diamond: '#8bd3ff',
-  Iri: '#c084fc',
+  Iri: '#d7a1ff',
 };
 
 const currentRankBase = computed(() => currentRank.value?.name?.split(' ')[0] || 'Iron');
@@ -335,56 +322,6 @@ const currentRankColorTextSoft = computed(() => `${currentRankColor.value}cc`);
 const currentRankRadialStyle = computed(() => ({
   background: `radial-gradient(circle at center, ${currentRankColor.value}26, rgba(0,0,0,0) 55%)`,
 }));
-const iriAccentOrange = '#f59e0b66';
-const iriAccentYellow = '#facc1566';
-const iriRingGradient = 'conic-gradient(from 140deg, #c084fc, #f59e0b, #facc15, #c084fc)';
-const currentRankBorderStyle = computed(() => {
-  if (currentRankBase.value === 'Iri') {
-    return {
-      borderWidth: '2px',
-      borderImage: `${iriRingGradient} 1`,
-    };
-  }
-  return { borderColor: currentRankColorBorder.value };
-});
-
-const ringCount = computed(() => {
-  const tierNumber = Number(currentRank.value?.name?.split(' ')[1] || 1);
-  return Number.isFinite(tierNumber) ? Math.max(1, Math.min(4, tierNumber)) : 1;
-});
-
-const ringClasses = (ring) => {
-  const base = currentRankBase.value === 'Iri' ? 'blur-sm' : 'border blur-sm';
-  if (ring === 1) return `${base} ring-anim-1`;
-  if (ring === 2) return `${base} ring-anim-2`;
-  if (ring === 3) return `${base} ring-anim-3`;
-  return `${base} ring-anim-4`;
-};
-
-const ringStyle = (ring) => {
-  const inset = ring * 6;
-  const size = `calc(100% - ${inset * 2}px)`;
-  if (currentRankBase.value === 'Iri') {
-    return {
-      width: size,
-      height: size,
-      left: `${inset}px`,
-      top: `${inset}px`,
-      background: iriRingGradient,
-      borderWidth: 0,
-      WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-      mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-    };
-  }
-  return {
-    width: size,
-    height: size,
-    left: `${inset}px`,
-    top: `${inset}px`,
-    borderColor: ring === 1 ? currentRankColorBorder.value : currentRankColorSoft.value,
-  };
-};
-
 const groupedTiers = computed(() => {
   const groups = new Map();
   tiers.forEach((tier) => {
@@ -402,26 +339,3 @@ const currentGroup = computed(() => {
   return groupedTiers.value.find((group) => group.name === base) || null;
 });
 </script>
-
-<style scoped>
-@keyframes ringPulseSlow {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.03); }
-}
-@keyframes ringPulseSoft {
-  0%, 100% { opacity: 0.45; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.02); }
-}
-@keyframes ringPulseWave {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50% { opacity: 0.75; transform: scale(1.04); }
-}
-@keyframes ringPulseQuick {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.01); }
-}
-.ring-anim-1 { animation: ringPulseSlow 3.6s ease-in-out infinite; }
-.ring-anim-2 { animation: ringPulseSoft 4.4s ease-in-out infinite; }
-.ring-anim-3 { animation: ringPulseWave 5.2s ease-in-out infinite; }
-.ring-anim-4 { animation: ringPulseQuick 2.8s ease-in-out infinite; }
-</style>
