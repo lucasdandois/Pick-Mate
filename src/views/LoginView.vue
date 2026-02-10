@@ -33,20 +33,19 @@
         <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
           <div class="flex items-center justify-between">
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
-            <p class="text-xs text-zinc-400">Points: {{ displayedPoints }}</p>
+            <p class="text-xs text-zinc-400"></p>
           </div>
           <div class="relative mt-5 overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-black/80 via-black/40 to-emerald-500/20 p-5 text-center sm:p-6">
             <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-400/20 blur-3xl"></div>
             <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.18),rgba(0,0,0,0)_55%)]"></div>
             <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
-              <p class="text-[11px] uppercase tracking-[0.3em] text-emerald-200/80">Rang atteint</p>
-              <div class="relative flex h-28 w-28 items-center justify-center sm:h-32 sm:w-32">
+              <div class="relative flex h-32 w-32 items-center justify-center sm:h-40 sm:w-40">
                 <div class="absolute inset-0 rounded-full border border-emerald-400/40 blur-sm"></div>
                 <div class="absolute inset-2 rounded-full border border-emerald-300/40 animate-pulse"></div>
-                <img :src="currentRank.image" :alt="currentRank.name" class="relative h-20 w-20 object-contain sm:h-24 sm:w-24" />
+                <img :src="currentRank.image" :alt="currentRank.name" class="relative h-24 w-24 object-contain sm:h-28 sm:w-28" />
               </div>
               <p class="text-xl font-semibold text-emerald-200 sm:text-2xl">{{ currentRank.name }}</p>
-              <p class="text-xs text-zinc-300">Progression du classement</p>
+              <p class="text-xs uppercase tracking-[0.3em] text-emerald-200/80">Points: {{ displayedPoints }}</p>
             </div>
           </div>
           <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-4 sm:p-6">
