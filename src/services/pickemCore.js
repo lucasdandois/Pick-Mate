@@ -228,6 +228,11 @@ export function useAuth() {
       const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            display_name: normalized,
+          },
+        },
       });
       if (authError) throw authError;
       user.value = data?.user ?? null;
@@ -270,11 +275,12 @@ export function useAuth() {
         return false;
       }
       const supabase = getSupabase();
-      const { error: updateError } = await supabase.from('profiles').upsert({
-        id: user.value.id,
-        email: user.value.email,
-        display_name: normalized || null,
-      });
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          display_name: normalized || null,
+        })
+        .eq('id', user.value.id);
       if (updateError) throw updateError;
       await loadProfile(user.value.id);
       return true;
