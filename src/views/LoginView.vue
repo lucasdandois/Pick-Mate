@@ -44,38 +44,29 @@
               <p class="text-xs text-zinc-400">Progression du classement</p>
             </div>
           </div>
-          <div class="mt-6 space-y-3">
-            <div
-              v-for="(tier, index) in tiers"
-              :key="tier.name"
-              class="flex items-center gap-3"
-            >
-              <div class="flex h-8 w-8 items-center justify-center">
-                <img :src="tier.image" :alt="tier.name" class="h-7 w-7 object-contain" />
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
+          <div class="mt-6 space-y-6">
+            <div v-for="group in groupedTiers" :key="group.name" class="rounded-xl border border-white/10 bg-black/40 p-3">
+              <p class="text-[10px] uppercase tracking-[0.25em] text-zinc-500">{{ group.name }}</p>
+              <div class="mt-3 grid grid-cols-4 gap-3">
+                <div
+                  v-for="tier in group.tiers"
+                  :key="tier.name"
+                  class="flex flex-col items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2 text-center"
+                >
+                  <img
+                    :src="tier.image"
+                    :alt="tier.name"
+                    class="object-contain"
+                    :class="tier.name === currentRank.name ? 'h-14 w-14' : 'h-10 w-10'"
+                  />
                   <p
-                    class="text-xs uppercase tracking-[0.2em]"
+                    class="text-[10px] uppercase tracking-[0.2em]"
                     :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
                   >
                     {{ tier.name }}
                   </p>
                   <p class="text-[10px] text-zinc-500">{{ tier.range }}</p>
                 </div>
-                <div class="mt-1 h-1.5 w-full rounded-full bg-white/10">
-                  <div
-                    class="h-1.5 rounded-full"
-                    :class="tier.name === currentRank.name ? 'bg-emerald-400' : 'bg-white/20'"
-                    :style="{ width: tier.name === currentRank.name ? '100%' : '40%' }"
-                  ></div>
-                </div>
-              </div>
-              <div class="flex h-full w-3 items-center justify-center">
-                <div
-                  v-if="index < tiers.length - 1"
-                  class="h-6 w-px bg-white/10"
-                ></div>
               </div>
             </div>
           </div>
@@ -273,5 +264,17 @@ const currentRank = computed(() => {
     if (points >= tier.min) result = tier;
   }
   return result;
+});
+
+const groupedTiers = computed(() => {
+  const groups = new Map();
+  tiers.forEach((tier) => {
+    const base = tier.name.split(' ')[0];
+    if (!groups.has(base)) {
+      groups.set(base, { name: base, tiers: [] });
+    }
+    groups.get(base).tiers.push(tier);
+  });
+  return Array.from(groups.values());
 });
 </script>
