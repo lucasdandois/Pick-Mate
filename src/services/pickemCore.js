@@ -204,7 +204,7 @@ export function useAuth() {
       if (user.value) {
         await loadProfile(user.value.id);
         await ensureProfile(user.value.id, email);
-        await applyPendingDisplayName(email);
+        await applyPendingDisplayName(email, updateProfile);
       }
       return true;
     } catch (err) {
@@ -339,13 +339,15 @@ function storePendingDisplayName(email, displayName) {
   }
 }
 
-async function applyPendingDisplayName(email) {
+async function applyPendingDisplayName(email, updater) {
   try {
     const raw = localStorage.getItem(PENDING_DISPLAY_NAME_KEY);
     const map = raw ? JSON.parse(raw) : {};
     const pending = normalizeDisplayName(map[email]);
     if (!pending) return;
-    await updateProfile(pending);
+    if (typeof updater === 'function') {
+      await updater(pending);
+    }
     delete map[email];
     localStorage.setItem(PENDING_DISPLAY_NAME_KEY, JSON.stringify(map));
   } catch {
