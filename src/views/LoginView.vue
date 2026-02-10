@@ -44,19 +44,19 @@
               <p class="text-xs text-zinc-400">Progression du classement</p>
             </div>
           </div>
-          <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-3">
+          <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-6">
             <p class="text-[10px] uppercase tracking-[0.25em] text-zinc-500">{{ currentGroup.name }}</p>
-            <div class="mt-3 grid grid-cols-4 gap-3">
+            <div class="mt-4 grid grid-cols-4 gap-4">
               <div
                 v-for="tier in currentGroup.tiers"
                 :key="tier.name"
-                class="flex flex-col items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2 text-center"
+                class="flex flex-col items-center gap-3 rounded-lg border border-white/10 bg-black/30 p-4 text-center"
               >
                 <img
                   :src="tier.image"
                   :alt="tier.name"
                   class="object-contain"
-                  :class="tier.name === currentRank.name ? 'h-14 w-14' : 'h-10 w-10'"
+                  :class="tier.name === currentRank.name ? 'h-20 w-20' : 'h-16 w-16'"
                 />
                 <p
                   class="text-[10px] uppercase tracking-[0.2em]"
@@ -102,8 +102,10 @@
           </div>
         </div>
 
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
-          <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Classement</p>
+        <details class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
+          <summary class="cursor-pointer list-none text-xs uppercase tracking-[0.25em] text-zinc-500">
+            Classement complet
+          </summary>
           <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="tier in tiers" :key="tier.name" class="rounded-xl border border-white/10 bg-black/40 p-3 text-center">
               <img :src="tier.image" :alt="tier.name" class="mx-auto h-20 w-20 object-contain" />
@@ -111,7 +113,7 @@
               <p class="mt-1 text-[10px] text-zinc-500">{{ tier.range }}</p>
             </div>
           </div>
-        </div>
+        </details>
       </div>
 
       <div v-else class="grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
