@@ -51,7 +51,7 @@
               <div class="relative flex h-36 w-36 items-center justify-center sm:h-44 sm:w-44">
                 <div
                   class="absolute inset-0 rounded-full border animate-pulse"
-                  :style="{ borderColor: currentRankColorSoft }"
+                  :style="currentRankRingStyle"
                 ></div>
                 <img :src="currentRank.image" :alt="currentRank.name" class="relative h-28 w-28 object-contain sm:h-32 sm:w-32" />
               </div>
@@ -300,6 +300,11 @@ const currentRank = computed(() => {
   return result;
 });
 
+const currentRankTierNumber = computed(() => {
+  const tier = Number(currentRank.value?.name?.split(' ')[1] || 1);
+  return Number.isFinite(tier) ? tier : 1;
+});
+
 const rankColorByBase = {
   Iron: '#b8b8b8',
   Bronze: '#c58c58',
@@ -321,6 +326,16 @@ const currentRankColorText = computed(() => currentRankColor.value);
 const currentRankColorTextSoft = computed(() => `${currentRankColor.value}cc`);
 const currentRankRadialStyle = computed(() => ({
   background: `radial-gradient(circle at center, ${currentRankColor.value}26, rgba(0,0,0,0) 55%)`,
+}));
+const currentRankBorderWidth = computed(() => `${Math.max(1, currentRankTierNumber.value) * 2}px`);
+const currentRankRingOpacity = computed(() => {
+  const tier = Math.max(1, currentRankTierNumber.value);
+  return Math.min(0.85, 0.35 + tier * 0.12);
+});
+const currentRankRingStyle = computed(() => ({
+  borderColor: currentRankColorSoft.value,
+  borderWidth: currentRankBorderWidth.value,
+  opacity: currentRankRingOpacity.value,
 }));
 const groupedTiers = computed(() => {
   const groups = new Map();
