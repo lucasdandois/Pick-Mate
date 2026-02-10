@@ -24,7 +24,7 @@
 
         <div class="hidden items-center gap-2 lg:flex">
           <RouterLink
-            v-for="item in menuItems"
+            v-for="item in navItems"
             :key="item.name"
             :to="item.href"
             class="rounded-full border border-transparent px-4 py-2 text-sm uppercase tracking-widest text-zinc-300 transition hover:border-emerald-400/40 hover:text-white"
@@ -46,7 +46,7 @@
       <div v-if="mobileMenuOpen" class="lg:hidden border-t border-white/10 bg-black/80 px-6 py-4">
         <div class="flex flex-col gap-3">
           <RouterLink
-            v-for="item in menuItems"
+            v-for="item in navItems"
             :key="item.name"
             :to="item.href"
             class="rounded-lg border border-white/10 px-4 py-2 text-sm uppercase tracking-widest text-zinc-200"
@@ -90,8 +90,19 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
-import { useAppShell } from './services/pickemCore';
+import { useAppShell, useAuth } from './services/pickemCore';
 
 const { mobileMenuOpen, menuItems, toggleMenu } = useAppShell();
+const { user } = useAuth();
+
+const navItems = computed(() =>
+  menuItems.map((item) => {
+    if (item.href === '/login') {
+      return { ...item, name: user.value ? 'Profil' : 'Connexion' };
+    }
+    return item;
+  }),
+);
 </script>

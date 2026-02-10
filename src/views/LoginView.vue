@@ -50,7 +50,7 @@
               <div
                 v-for="tier in currentGroup.tiers"
                 :key="tier.name"
-                class="flex flex-col items-center gap-3 rounded-lg border border-white/10 bg-black/30 p-4 text-center"
+                class="flex flex-col items-center gap-3 rounded-lg border border-white/10 p-4 text-center"
               >
                 <img
                   :src="tier.image"
