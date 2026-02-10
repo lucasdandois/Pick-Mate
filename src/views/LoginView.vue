@@ -37,7 +37,7 @@
           </div>
           <div
             class="relative mt-5 overflow-hidden rounded-2xl border bg-gradient-to-br from-black/80 via-black/40 to-black/20 p-5 text-center sm:p-6"
-            :style="{ borderColor: currentRankColorBorder }"
+            :style="currentRankBorderStyle"
           >
             <div
               class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl"
@@ -59,8 +59,26 @@
             ></div>
             <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
               <div class="relative flex h-32 w-32 items-center justify-center sm:h-40 sm:w-40">
-                <div class="absolute inset-0 rounded-full border blur-sm" :style="{ borderColor: currentRankColorBorder }"></div>
-                <div class="absolute inset-2 rounded-full border animate-pulse" :style="{ borderColor: currentRankColorSoft }"></div>
+                <div
+                  v-if="currentRankBase === 'Iri'"
+                  class="absolute inset-0 rounded-full blur-sm"
+                  :style="iriRingStyle"
+                ></div>
+                <div
+                  v-else
+                  class="absolute inset-0 rounded-full border blur-sm"
+                  :style="{ borderColor: currentRankColorBorder }"
+                ></div>
+                <div
+                  v-if="currentRankBase === 'Iri'"
+                  class="absolute inset-2 rounded-full animate-pulse"
+                  :style="iriPulseRingStyle"
+                ></div>
+                <div
+                  v-else
+                  class="absolute inset-2 rounded-full border animate-pulse"
+                  :style="{ borderColor: currentRankColorSoft }"
+                ></div>
                 <img :src="currentRank.image" :alt="currentRank.name" class="relative h-24 w-24 object-contain sm:h-28 sm:w-28" />
               </div>
               <p class="text-xl font-semibold sm:text-2xl" :style="{ color: currentRankColorText }">{{ currentRank.name }}</p>
@@ -332,6 +350,28 @@ const currentRankRadialStyle = computed(() => ({
 }));
 const iriAccentOrange = '#f59e0b66';
 const iriAccentYellow = '#facc1566';
+const iriRingGradient = 'conic-gradient(from 140deg, #c084fc, #f59e0b, #facc15, #c084fc)';
+const iriRingStyle = {
+  background: iriRingGradient,
+  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+  mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+};
+const iriPulseRingStyle = {
+  background: iriRingGradient,
+  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+  mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+  opacity: 0.75,
+};
+
+const currentRankBorderStyle = computed(() => {
+  if (currentRankBase.value === 'Iri') {
+    return {
+      borderWidth: '2px',
+      borderImage: `${iriRingGradient} 1`,
+    };
+  }
+  return { borderColor: currentRankColorBorder.value };
+});
 
 const groupedTiers = computed(() => {
   const groups = new Map();
