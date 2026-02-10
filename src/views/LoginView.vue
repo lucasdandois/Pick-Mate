@@ -35,7 +35,7 @@
         <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
           <div class="flex items-center justify-between">
             <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Votre rang</p>
-            <p class="text-xs text-zinc-400">Points: {{ totalPoints }}</p>
+            <p class="text-xs text-zinc-400">Points: {{ displayedPoints }}</p>
           </div>
           <div class="mt-4 flex items-center gap-4">
             <img :src="currentRank.image" :alt="currentRank.name" class="h-16 w-16 object-contain" />
@@ -256,8 +256,13 @@ const tiers = [
   { name: 'Iri 4', min: 1750, range: '1750+', image: '/iri4.png' },
 ];
 
+const displayedPoints = computed(() => {
+  const dbPoints = profile.value?.total_points;
+  return Number.isFinite(dbPoints) ? dbPoints : totalPoints.value || 0;
+});
+
 const currentRank = computed(() => {
-  const points = totalPoints.value || 0;
+  const points = displayedPoints.value || 0;
   const sorted = [...tiers].sort((a, b) => a.min - b.min);
   let result = sorted[0];
   for (const tier of sorted) {
