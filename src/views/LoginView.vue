@@ -44,29 +44,27 @@
               <p class="text-xs text-zinc-400">Progression du classement</p>
             </div>
           </div>
-          <div class="mt-6 space-y-6">
-            <div v-for="group in groupedTiers" :key="group.name" class="rounded-xl border border-white/10 bg-black/40 p-3">
-              <p class="text-[10px] uppercase tracking-[0.25em] text-zinc-500">{{ group.name }}</p>
-              <div class="mt-3 grid grid-cols-4 gap-3">
-                <div
-                  v-for="tier in group.tiers"
-                  :key="tier.name"
-                  class="flex flex-col items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2 text-center"
+          <div v-if="currentGroup" class="mt-6 rounded-xl border border-white/10 bg-black/40 p-3">
+            <p class="text-[10px] uppercase tracking-[0.25em] text-zinc-500">{{ currentGroup.name }}</p>
+            <div class="mt-3 grid grid-cols-4 gap-3">
+              <div
+                v-for="tier in currentGroup.tiers"
+                :key="tier.name"
+                class="flex flex-col items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2 text-center"
+              >
+                <img
+                  :src="tier.image"
+                  :alt="tier.name"
+                  class="object-contain"
+                  :class="tier.name === currentRank.name ? 'h-14 w-14' : 'h-10 w-10'"
+                />
+                <p
+                  class="text-[10px] uppercase tracking-[0.2em]"
+                  :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
                 >
-                  <img
-                    :src="tier.image"
-                    :alt="tier.name"
-                    class="object-contain"
-                    :class="tier.name === currentRank.name ? 'h-14 w-14' : 'h-10 w-10'"
-                  />
-                  <p
-                    class="text-[10px] uppercase tracking-[0.2em]"
-                    :class="tier.name === currentRank.name ? 'text-emerald-300' : 'text-zinc-400'"
-                  >
-                    {{ tier.name }}
-                  </p>
-                  <p class="text-[10px] text-zinc-500">{{ tier.range }}</p>
-                </div>
+                  {{ tier.name }}
+                </p>
+                <p class="text-[10px] text-zinc-500">{{ tier.range }}</p>
               </div>
             </div>
           </div>
@@ -276,5 +274,10 @@ const groupedTiers = computed(() => {
     groups.get(base).tiers.push(tier);
   });
   return Array.from(groups.values());
+});
+
+const currentGroup = computed(() => {
+  const base = currentRank.value?.name?.split(' ')[0];
+  return groupedTiers.value.find((group) => group.name === base) || null;
 });
 </script>
