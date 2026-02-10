@@ -60,24 +60,11 @@
             <div class="relative mx-auto flex w-full max-w-xs flex-col items-center gap-3">
               <div class="relative flex h-32 w-32 items-center justify-center sm:h-40 sm:w-40">
                 <div
-                  v-if="currentRankBase === 'Iri'"
-                  class="absolute inset-0 rounded-full blur-sm"
-                  :style="iriRingStyle"
-                ></div>
-                <div
-                  v-else
-                  class="absolute inset-0 rounded-full border blur-sm"
-                  :style="{ borderColor: currentRankColorBorder }"
-                ></div>
-                <div
-                  v-if="currentRankBase === 'Iri'"
-                  class="absolute inset-2 rounded-full animate-pulse"
-                  :style="iriPulseRingStyle"
-                ></div>
-                <div
-                  v-else
-                  class="absolute inset-2 rounded-full border animate-pulse"
-                  :style="{ borderColor: currentRankColorSoft }"
+                  v-for="ring in ringCount"
+                  :key="ring"
+                  class="absolute rounded-full"
+                  :class="ringClasses(ring)"
+                  :style="ringStyle(ring)"
                 ></div>
                 <img :src="currentRank.image" :alt="currentRank.name" class="relative h-24 w-24 object-contain sm:h-28 sm:w-28" />
               </div>
@@ -351,18 +338,6 @@ const currentRankRadialStyle = computed(() => ({
 const iriAccentOrange = '#f59e0b66';
 const iriAccentYellow = '#facc1566';
 const iriRingGradient = 'conic-gradient(from 140deg, #c084fc, #f59e0b, #facc15, #c084fc)';
-const iriRingStyle = {
-  background: iriRingGradient,
-  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-  mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-};
-const iriPulseRingStyle = {
-  background: iriRingGradient,
-  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-  mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-  opacity: 0.75,
-};
-
 const currentRankBorderStyle = computed(() => {
   if (currentRankBase.value === 'Iri') {
     return {
@@ -372,6 +347,43 @@ const currentRankBorderStyle = computed(() => {
   }
   return { borderColor: currentRankColorBorder.value };
 });
+
+const ringCount = computed(() => {
+  const tierNumber = Number(currentRank.value?.name?.split(' ')[1] || 1);
+  return Number.isFinite(tierNumber) ? Math.max(1, Math.min(4, tierNumber)) : 1;
+});
+
+const ringClasses = (ring) => {
+  const base = currentRankBase.value === 'Iri' ? 'blur-sm' : 'border blur-sm';
+  if (ring === 1) return `${base} ring-anim-1`;
+  if (ring === 2) return `${base} ring-anim-2`;
+  if (ring === 3) return `${base} ring-anim-3`;
+  return `${base} ring-anim-4`;
+};
+
+const ringStyle = (ring) => {
+  const inset = ring * 6;
+  const size = `calc(100% - ${inset * 2}px)`;
+  if (currentRankBase.value === 'Iri') {
+    return {
+      width: size,
+      height: size,
+      left: `${inset}px`,
+      top: `${inset}px`,
+      background: iriRingGradient,
+      borderWidth: 0,
+      WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+      mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+    };
+  }
+  return {
+    width: size,
+    height: size,
+    left: `${inset}px`,
+    top: `${inset}px`,
+    borderColor: ring === 1 ? currentRankColorBorder.value : currentRankColorSoft.value,
+  };
+};
 
 const groupedTiers = computed(() => {
   const groups = new Map();
@@ -390,3 +402,26 @@ const currentGroup = computed(() => {
   return groupedTiers.value.find((group) => group.name === base) || null;
 });
 </script>
+
+<style scoped>
+@keyframes ringPulseSlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.03); }
+}
+@keyframes ringPulseSoft {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+@keyframes ringPulseWave {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.04); }
+}
+@keyframes ringPulseQuick {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.01); }
+}
+.ring-anim-1 { animation: ringPulseSlow 3.6s ease-in-out infinite; }
+.ring-anim-2 { animation: ringPulseSoft 4.4s ease-in-out infinite; }
+.ring-anim-3 { animation: ringPulseWave 5.2s ease-in-out infinite; }
+.ring-anim-4 { animation: ringPulseQuick 2.8s ease-in-out infinite; }
+</style>
