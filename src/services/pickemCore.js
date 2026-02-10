@@ -210,7 +210,12 @@ export function useAuth() {
       });
       if (authError) throw authError;
       user.value = data?.user ?? null;
-      // Profile creation is handled by DB trigger; avoid client inserts here.
+      // If a session exists (email confirmation disabled), store display_name immediately.
+      if (data?.session?.user && displayName) {
+        user.value = data.session.user;
+        await updateProfile(displayName);
+        await loadProfile(user.value.id);
+      }
       return true;
     } catch (err) {
       error.value = err?.message ?? 'Inscription impossible';
