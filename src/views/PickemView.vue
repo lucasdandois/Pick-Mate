@@ -61,7 +61,7 @@
                 {{ pill.label }}
               </span>
               <span
-                v-for="badge in getSeriesBadges(match)"
+                v-for="badge in getFilteredSeriesBadges(match)"
                 :key="badge"
                 class="rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-fuchsia-200"
               >
@@ -126,7 +126,9 @@
 </template>
 
 <script setup>
+import { onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import {
   formatMatchDate,
   getMatchMeta,
@@ -143,6 +145,19 @@ const { pickableMatches, loading, error, picks, pickCount, selectPick, scorePick
 const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(pickableMatches);
 const { user } = useAuth();
 const router = useRouter();
+const route = useRoute();
+
+const applyRouteGameFilter = () => {
+  const gameFromQuery = typeof route.query?.game === 'string' ? route.query.game : null;
+  if (!gameFromQuery) return;
+  const exists = games.value.some((game) => game.name === gameFromQuery);
+  if (exists) {
+    setGame(gameFromQuery);
+  }
+};
+
+onMounted(applyRouteGameFilter);
+watch(() => route.query?.game, applyRouteGameFilter);
 
 const handleConfirmPick = (matchId) => {
   if (!user.value) {
@@ -189,6 +204,14 @@ const getGamePills = (match) => {
   }
 
   return pills;
+};
+
+const getFilteredSeriesBadges = (match) => {
+  const seriesText = `${match?.league?.name ?? ''} ${match?.serie?.name ?? ''} ${match?.tournament?.name ?? ''}`.toLowerCase();
+  const isGC = seriesText.includes('game changers') || seriesText.includes('gc');
+  if (isGC) return ['GC'];
+  const isVctEmea = seriesText.includes('vct') && seriesText.includes('emea');
+  return getSeriesBadges(match).filter((badge) => badge === 'VCT' && isVctEmea);
 };
 
 const getScoreOptions = (match, pickedTeamId) => {

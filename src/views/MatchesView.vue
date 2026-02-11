@@ -138,10 +138,12 @@ const getGamePills = (match) => {
 };
 
 const getFilteredSeriesBadges = (match) => {
-  const badges = getSeriesBadges(match);
   const seriesText = `${match?.league?.name ?? ''} ${match?.serie?.name ?? ''} ${match?.tournament?.name ?? ''}`.toLowerCase();
+  const isGC = seriesText.includes('game changers') || seriesText.includes('gc');
+  if (isGC) return ['GC'];
+  const badges = getSeriesBadges(match);
   const isVctEmea = seriesText.includes('vct') && seriesText.includes('emea');
-  return badges.filter((badge) => badge === 'GC' || (badge === 'VCT' && isVctEmea));
+  return badges.filter((badge) => badge === 'VCT' && isVctEmea);
 };
 
 const getSeriesBadgeClass = (badge) => {
