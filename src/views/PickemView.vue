@@ -18,13 +18,6 @@
       <p v-else class="text-xs text-zinc-500">
         Une fois valides, les picks ne peuvent plus etre modifies.
       </p>
-      <button
-        class="rounded-full border border-white/20 px-5 py-2 text-xs uppercase tracking-[0.3em] text-white"
-        @click="requestReset"
-      >
-        Reset admin
-      </button>
-      <p v-if="resetMessage" class="text-xs text-zinc-400">{{ resetMessage }}</p>
     </div>
 
     <div class="mt-6">
@@ -133,7 +126,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import {
   formatMatchDate,
   getMatchMeta,
@@ -146,17 +138,8 @@ import {
   useCalendarFilters,
 } from '../services/pickemCore';
 
-const { pickableMatches, loading, error, picks, pickCount, selectPick, scorePicks, selectScorePick, locked, confirmed, confirmPick, resetPicks } = usePickemBoard();
+const { pickableMatches, loading, error, picks, pickCount, selectPick, scorePicks, selectScorePick, locked, confirmed, confirmPick } = usePickemBoard();
 const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(pickableMatches);
-
-const resetMessage = ref('');
-
-const requestReset = () => {
-  const password = window.prompt('Mot de passe admin:');
-  if (!password) return;
-  const result = resetPicks(password);
-  resetMessage.value = result.ok ? 'Picks reinitialises.' : result.message;
-};
 
 const getGamePills = (match) => {
   const name = (match?.videogame?.name || '').toLowerCase();

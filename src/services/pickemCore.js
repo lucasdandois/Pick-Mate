@@ -13,7 +13,6 @@ let teamIdsPromise = null;
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const memoryCache = new Map();
 const PICKS_LOCK_KEY = 'gentle-mates-pickem-locked';
-const RESET_PASSWORD = import.meta.env.VITE_PICKEM_RESET_PASSWORD;
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const REFRESH_INTERVAL_MS = 60 * 60 * 1000;
@@ -495,15 +494,6 @@ export function usePickemBoard() {
     confirmPick: (matchId) => {
       if (!matchId) return;
       confirmed.value = { ...confirmed.value, [matchId]: true };
-    },
-    resetPicks: (password) => {
-      if (!RESET_PASSWORD) return { ok: false, message: 'Mot de passe non configure.' };
-      if (password !== RESET_PASSWORD) return { ok: false, message: 'Mot de passe incorrect.' };
-      picks.value = {};
-      locked.value = false;
-      confirmed.value = {};
-      scorePicks.value = {};
-      return { ok: true };
     },
   };
 }
