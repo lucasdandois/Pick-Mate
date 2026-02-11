@@ -81,10 +81,10 @@ const tiers = [
   { name: 'Diamond 2', min: 1450, image: '/diamond2.png' },
   { name: 'Diamond 3', min: 1500, image: '/diamond3.png' },
   { name: 'Diamond 4', min: 1550, image: '/diamond4.png' },
-  { name: 'Iri 1', min: 1600, image: '/iri1.png' },
-  { name: 'Iri 2', min: 1650, image: '/iri2.png' },
-  { name: 'Iri 3', min: 1700, image: '/iri3.png' },
-  { name: 'Iri 4', min: 1750, image: '/iri4.png' },
+  { name: 'Oracle 1', min: 1600, image: '/oracle1.png' },
+  { name: 'Oracle 2', min: 1650, image: '/oracle2.png' },
+  { name: 'Oracle 3', min: 1700, image: '/oracle3.png' },
+  { name: 'Oracle 4', min: 1750, image: '/oracle4.png' },
 ];
 
 const getRankTier = (points) => {

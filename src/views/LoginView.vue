@@ -272,10 +272,10 @@ const tiers = [
   { name: 'Diamond 2', min: 1450, range: '1450-1499', image: '/diamond2.png' },
   { name: 'Diamond 3', min: 1500, range: '1500-1549', image: '/diamond3.png' },
   { name: 'Diamond 4', min: 1550, range: '1550-1599', image: '/diamond4.png' },
-  { name: 'Iri 1', min: 1600, range: '1600-1649', image: '/iri1.png' },
-  { name: 'Iri 2', min: 1650, range: '1650-1699', image: '/iri2.png' },
-  { name: 'Iri 3', min: 1700, range: '1700-1749', image: '/iri3.png' },
-  { name: 'Iri 4', min: 1750, range: '1750+', image: '/iri4.png' },
+  { name: 'Oracle 1', min: 1600, range: '1600-1649', image: '/oracle1.png' },
+  { name: 'Oracle 2', min: 1650, range: '1650-1699', image: '/oracle2.png' },
+  { name: 'Oracle 3', min: 1700, range: '1700-1749', image: '/oracle3.png' },
+  { name: 'Oracle 4', min: 1750, range: '1750+', image: '/oracle4.png' },
 ];
 
 const displayedPoints = computed(() => {
@@ -314,7 +314,7 @@ const rankColorByBase = {
   Emerald: '#4ade80',
   Rubi: '#f472b6',
   Diamond: '#8bd3ff',
-  Iri: '#d7a1ff',
+  Oracle: '#d7a1ff',
 };
 
 const currentRankBase = computed(() => currentRank.value?.name?.split(' ')[0] || 'Iron');
@@ -328,7 +328,7 @@ const currentRankRadialStyle = computed(() => ({
   background: `radial-gradient(circle at center, ${currentRankColor.value}26, rgba(0,0,0,0) 55%)`,
 }));
 const currentRankGlowStyle = computed(() => {
-  if (currentRankBase.value === 'Iri') {
+  if (currentRankBase.value === 'Oracle') {
     return {
       background: 'radial-gradient(circle at center, rgba(192,132,252,0.3), rgba(245,158,11,0.45), rgba(0,0,0,0) 70%)',
     };
@@ -342,7 +342,7 @@ const currentRankRingOpacity = computed(() => {
 });
 const iriRingGradient = 'conic-gradient(from 140deg, rgba(192,132,252,0.9), rgba(245,158,11,0.9), rgba(192,132,252,0.9))';
 const currentRankRingStyle = computed(() => {
-  if (currentRankBase.value === 'Iri') {
+  if (currentRankBase.value === 'Oracle') {
     return {
       background: iriRingGradient,
       WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
@@ -358,7 +358,7 @@ const currentRankRingStyle = computed(() => {
 });
 
 const currentRankCardBorderStyle = computed(() => {
-  if (currentRankBase.value === 'Iri') {
+  if (currentRankBase.value === 'Oracle') {
     return {
       borderWidth: '2px',
       borderColor: 'rgba(230,150,160,0.9)',
