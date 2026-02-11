@@ -76,7 +76,7 @@
           <button
             v-for="opponent in getOpponents(match)"
             :key="opponent.id"
-            class="flex items-center justify-between rounded-xl border px-4 py-3 text-sm uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
+            class="flex w-full items-center justify-between rounded-xl border px-4 py-3 text-sm uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60 md:w-fit md:max-w-full md:justify-self-start"
             :class="picks[match.id] === opponent.id
               ? 'border-emerald-400 bg-emerald-400 text-black'
               : 'border-white/10 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
