@@ -27,6 +27,8 @@ function buildCacheKey(path, query) {
 function sendCachedResponse(res, entry, ttlSeconds) {
   res.setHeader('Content-Type', entry.contentType || 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', `public, s-maxage=${ttlSeconds}, stale-while-revalidate=300`);
+  res.setHeader('CDN-Cache-Control', `public, s-maxage=${ttlSeconds}, stale-while-revalidate=300`);
+  res.setHeader('Vercel-CDN-Cache-Control', `public, s-maxage=${ttlSeconds}, stale-while-revalidate=300`);
   res.setHeader('X-Proxy-Cache', 'HIT');
   res.status(entry.status).send(entry.body);
 }
@@ -77,9 +79,13 @@ export default async function handler(req, res) {
       });
       res.setHeader('X-Proxy-Cache', 'MISS');
       res.setHeader('Cache-Control', `public, s-maxage=${ttlSeconds}, stale-while-revalidate=300`);
+      res.setHeader('CDN-Cache-Control', `public, s-maxage=${ttlSeconds}, stale-while-revalidate=300`);
+      res.setHeader('Vercel-CDN-Cache-Control', `public, s-maxage=${ttlSeconds}, stale-while-revalidate=300`);
     } else {
       res.setHeader('X-Proxy-Cache', 'BYPASS');
       res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('CDN-Cache-Control', 'no-store');
+      res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
     }
     res.setHeader('Content-Type', contentType);
     res.status(response.status).send(text);
