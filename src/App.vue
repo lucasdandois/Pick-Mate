@@ -11,7 +11,7 @@
         <RouterLink to="/" class="flex items-center gap-3">
           <div class="flex h-20 w-20 items-center justify-center  ">
             <img
-              src="/public/silver4.png"
+              src="/public/Fichier 2.svg"
               alt="Gentle Mates logo"
               class="h-20 w-20 object-contain"
             />
