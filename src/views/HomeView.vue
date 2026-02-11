@@ -86,15 +86,18 @@
 
       <aside class="space-y-4">
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Ticket</p>
-          <div class="mt-4 rounded-xl border border-white/10 bg-black/40 p-3">
-            <p class="text-xs uppercase tracking-[0.22em] text-zinc-500">Selection Active</p>
-            <p class="mt-2 text-sm text-white">Aucune selection</p>
-            <p class="mt-2 text-xs text-zinc-400">Clique une cote pour preparer ton pari.</p>
+          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resultats</p>
+          <div class="mt-4 space-y-2">
+            <div
+              v-for="match in ticketResults"
+              :key="match.id"
+              class="rounded-xl border border-white/10 bg-black/40 p-3"
+            >
+              <p class="text-sm text-white">{{ getMatchTitle(match) }}</p>
+              <p class="mt-1 text-xs uppercase tracking-[0.22em] text-emerald-300">{{ getMatchScoreline(match) }}</p>
+            </div>
+            <p v-if="ticketResults.length === 0" class="text-xs text-zinc-400">Aucun resultat disponible.</p>
           </div>
-          <RouterLink to="/pickem" class="mt-4 block w-full rounded-3xl border border-white/10 bg-black/70 px-4 py-4 text-center text-sm font-semibold text-emerald-300 shadow-[0_0_0_1px_rgba(16,185,129,0.25)_inset]">
-            Aller Au Pick'em
-          </RouterLink>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Flash Infos</p>
@@ -118,14 +121,18 @@ import { RouterLink } from 'vue-router';
 import {
   formatMatchDate,
   getMatchMeta,
+  getMatchScoreline,
   getMatchTitle,
   useBrandInfo,
+  usePastMatches,
   useUpcomingMatches,
 } from '../services/pickemCore';
 
 const { teamName } = useBrandInfo();
 const { matches, loading, error } = useUpcomingMatches();
+const { matches: pastMatches } = usePastMatches({ perPage: 10 });
 const homeMatches = computed(() => (matches.value || []).slice(0, 5));
+const ticketResults = computed(() => (pastMatches.value || []).slice(0, 2));
 
 const sports = computed(() => [
   'Call Of Duty',

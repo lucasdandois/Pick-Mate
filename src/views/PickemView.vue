@@ -109,7 +109,7 @@
               ? 'border-emerald-400 bg-emerald-400 text-black'
               : 'border-emerald-400/60 text-emerald-200'"
             :disabled="locked || !picks[match.id] || !scorePicks[match.id] || confirmed[match.id] || isMatchStarted(match)"
-            @click="confirmPick(match.id)"
+            @click="handleConfirmPick(match.id)"
           >
             {{ confirmed[match.id] ? 'Valide' : 'Valider' }}
           </button>
@@ -126,20 +126,31 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import {
   formatMatchDate,
   getMatchMeta,
   getMatchTitle,
   getSeriesBadges,
   getOpponents,
-  isMatchInPast,
   isMatchStarted,
+  useAuth,
   usePickemBoard,
   useCalendarFilters,
 } from '../services/pickemCore';
 
 const { pickableMatches, loading, error, picks, pickCount, selectPick, scorePicks, selectScorePick, locked, confirmed, confirmPick } = usePickemBoard();
 const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(pickableMatches);
+const { user } = useAuth();
+const router = useRouter();
+
+const handleConfirmPick = (matchId) => {
+  if (!user.value) {
+    router.push('/login?redirect=/pickem');
+    return;
+  }
+  confirmPick(matchId);
+};
 
 const getGamePills = (match) => {
   const name = (match?.videogame?.name || '').toLowerCase();

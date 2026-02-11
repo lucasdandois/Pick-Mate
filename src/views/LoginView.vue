@@ -215,6 +215,7 @@
 
 <script setup>
 import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { formatDisplayName, useAuth, usePickHistory } from '../services/pickemCore';
 
 const { user, profile, loading, error, signIn, signUp, signOut } = useAuth();
@@ -226,17 +227,37 @@ const password = ref('');
 const displayName = ref('');
 const success = ref('');
 const submitAttempted = ref(false);
+const route = useRoute();
+const router = useRouter();
+
+const getRedirectTarget = () => {
+  const target = route.query?.redirect;
+  if (typeof target === 'string' && target.startsWith('/')) return target;
+  return null;
+};
 
 const submit = async () => {
   success.value = '';
   submitAttempted.value = true;
   if (mode.value === 'login') {
     const ok = await signIn(email.value, password.value);
-    if (ok) success.value = 'Connexion reussie.';
+    if (ok) {
+      success.value = 'Connexion reussie.';
+      const redirectTarget = getRedirectTarget();
+      if (redirectTarget) {
+        router.replace(redirectTarget);
+      }
+    }
     return;
   }
   const ok = await signUp(email.value, password.value, displayName.value);
-  if (ok) success.value = 'Compte cree. Verifie ton email si necessaire.';
+  if (ok) {
+    success.value = 'Compte cree. Verifie ton email si necessaire.';
+    const redirectTarget = getRedirectTarget();
+    if (redirectTarget && user.value) {
+      router.replace(redirectTarget);
+    }
+  }
 };
 
 const tiers = [
