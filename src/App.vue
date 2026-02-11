@@ -13,7 +13,7 @@
             <img
               src="/public/Fichier 2.svg"
               alt="Gentle Mates logo"
-              class="h-10 w-10 object-contain"
+              class="h-20 w-20 object-contain"
             />
           </div>
           <div>

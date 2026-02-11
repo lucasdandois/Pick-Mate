@@ -18,11 +18,17 @@
         <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/10 to-fuchsia-500/10 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-zinc-200">Mode Rapide</p>
           <p class="mt-3 text-sm text-zinc-300">Acces direct aux picks et au calendrier de {{ teamName }}.</p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <RouterLink to="/pickem" class="rounded-full border border-emerald-400/70 px-4 py-2 text-[10px] uppercase tracking-[0.25em] text-emerald-200">
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <RouterLink
+              to="/pickem"
+              class="rounded-3xl border border-white/10 bg-black/70 px-4 py-4 text-center text-sm font-semibold text-emerald-300 shadow-[0_0_0_1px_rgba(16,185,129,0.25)_inset]"
+            >
               Pick'em
             </RouterLink>
-            <RouterLink to="/matches" class="rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.25em] text-white">
+            <RouterLink
+              to="/matches"
+              class="rounded-3xl border border-white/10 bg-black/70 px-4 py-4 text-center text-sm font-semibold text-emerald-300 shadow-[0_0_0_1px_rgba(16,185,129,0.25)_inset]"
+            >
               Matchs
             </RouterLink>
           </div>
@@ -55,24 +61,24 @@
 
           <div v-else class="mt-4 space-y-3">
             <div
-              v-for="match in matches"
+              v-for="match in homeMatches"
               :key="match.id"
-              class="grid gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 md:grid-cols-[1fr_auto_auto_auto]"
+              class="rounded-2xl border border-white/10 bg-black/40 p-4"
             >
               <div>
                 <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
                 <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <span
+                    v-for="badge in getMatchBadges(match)"
+                    :key="`${match.id}-${badge}`"
+                    class="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-emerald-200"
+                  >
+                    {{ badge }}
+                  </span>
+                </div>
                 <p class="mt-2 text-xs uppercase tracking-[0.25em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
               </div>
-              <button class="rounded-xl border border-white/10 bg-black/70 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-emerald-400/60">
-                1 <span class="ml-2 text-emerald-300">{{ getOdds(match.id, 1) }}</span>
-              </button>
-              <button class="rounded-xl border border-white/10 bg-black/70 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-emerald-400/60">
-                X <span class="ml-2 text-emerald-300">{{ getOdds(match.id, 2) }}</span>
-              </button>
-              <button class="rounded-xl border border-white/10 bg-black/70 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200 hover:border-emerald-400/60">
-                2 <span class="ml-2 text-emerald-300">{{ getOdds(match.id, 3) }}</span>
-              </button>
             </div>
           </div>
         </div>
@@ -86,7 +92,7 @@
             <p class="mt-2 text-sm text-white">Aucune selection</p>
             <p class="mt-2 text-xs text-zinc-400">Clique une cote pour preparer ton pari.</p>
           </div>
-          <RouterLink to="/pickem" class="mt-4 block w-full rounded-xl bg-gradient-to-r from-emerald-400 to-fuchsia-400 px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-black">
+          <RouterLink to="/pickem" class="mt-4 block w-full rounded-3xl border border-white/10 bg-black/70 px-4 py-4 text-center text-sm font-semibold text-emerald-300 shadow-[0_0_0_1px_rgba(16,185,129,0.25)_inset]">
             Aller Au Pick'em
           </RouterLink>
         </div>
@@ -119,6 +125,7 @@ import {
 
 const { teamName } = useBrandInfo();
 const { matches, loading, error } = useUpcomingMatches();
+const homeMatches = computed(() => (matches.value || []).slice(0, 5));
 
 const sports = computed(() => [
   'Call Of Duty',
@@ -129,8 +136,21 @@ const sports = computed(() => [
   'Fortnite',
 ]);
 
-const getOdds = (id, seed) => {
-  const base = ((Number(id || 1) * (seed + 7)) % 145) / 100 + 1.15;
-  return base.toFixed(2);
+const getMatchBadges = (match) => {
+  const badges = [];
+  const game = String(match?.videogame?.name || '').toLowerCase();
+  const text = `${match?.league?.name || ''} ${match?.serie?.name || ''} ${match?.tournament?.name || ''}`.toLowerCase();
+
+  if (game.includes('counter-strike') || game.includes('cs2') || game.includes('cs-go')) badges.push('CS');
+  if (game.includes('call of duty') || game.includes('cod') || game.includes('warzone')) badges.push('COD');
+  if (game.includes('valorant')) {
+    if (text.includes('game changers') || text.includes('gc')) {
+      badges.push('GC');
+    } else if (text.includes('vct')) {
+      badges.push('VCT');
+    }
+  }
+
+  return badges;
 };
 </script>
