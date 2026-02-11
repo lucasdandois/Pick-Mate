@@ -50,6 +50,26 @@
       </div>
 
       <div class="grid grid-cols-2 gap-4">
+        <div class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Top 4 Joueurs</p>
+          <div class="mt-3 space-y-2">
+            <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
+            <p v-else-if="leaderboardError" class="text-xs text-red-300">{{ leaderboardError }}</p>
+            <div
+              v-else
+              v-for="(player, index) in topPlayers"
+              :key="player.id"
+              class="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
+            >
+              <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
+              <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
+            </div>
+            <p v-if="!leaderboardLoading && !leaderboardError && topPlayers.length === 0" class="text-xs text-zinc-400">
+              Aucun joueur classe.
+            </p>
+          </div>
+        </div>
+
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Equipes</p>
           <div class="mt-4 space-y-2">
@@ -125,26 +145,6 @@
               <p class="mt-1 text-xs uppercase tracking-[0.22em] text-emerald-300">{{ getMatchScoreline(match) }}</p>
             </div>
             <p v-if="ticketResults.length === 0" class="text-xs text-zinc-400">Aucun resultat disponible.</p>
-          </div>
-        </div>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Top 4 Joueurs</p>
-          <div class="mt-3 space-y-2">
-            <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
-            <p v-else-if="leaderboardError" class="text-xs text-red-300">{{ leaderboardError }}</p>
-            <div
-              v-else
-              v-for="(player, index) in topPlayers"
-              :key="player.id"
-              class="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
-            >
-              <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
-              <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
-            </div>
-            <p v-if="!leaderboardLoading && !leaderboardError && topPlayers.length === 0" class="text-xs text-zinc-400">
-              Aucun joueur classe.
-            </p>
           </div>
         </div>
 
