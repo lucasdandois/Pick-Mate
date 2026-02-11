@@ -10,12 +10,16 @@ let cachedTeamId = null;
 let teamIdPromise = null;
 let cachedTeamIds = null;
 let teamIdsPromise = null;
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 60 * 1000;
 const memoryCache = new Map();
+const persistedCache = new Map();
+const inFlightRequests = new Map();
+const API_CACHE_STORAGE_KEY = 'gentle-mates-api-cache-v1';
+let persistedCacheLoaded = false;
 const PICKS_LOCK_KEY = 'gentle-mates-pickem-locked';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const REFRESH_INTERVAL_MS = 60 * 60 * 1000;
+const REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 const MENU_ITEMS = [
   { name: 'Accueil', href: '/' },
@@ -79,31 +83,90 @@ function getDisplayNameError(err) {
   return null;
 }
 
+function loadPersistedCache() {
+  if (persistedCacheLoaded) return;
+  persistedCacheLoaded = true;
+  try {
+    const raw = localStorage.getItem(API_CACHE_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    Object.entries(parsed || {}).forEach(([key, value]) => {
+      if (!value || typeof value !== 'object') return;
+      if (Date.now() - value.timestamp > CACHE_TTL_MS) return;
+      persistedCache.set(key, value);
+    });
+  } catch {
+    // ignore invalid local cache
+  }
+}
+
+function savePersistedCache() {
+  try {
+    const payload = {};
+    persistedCache.forEach((value, key) => {
+      payload[key] = value;
+    });
+    localStorage.setItem(API_CACHE_STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore storage limits
+  }
+}
+
 function getCache(key) {
   const entry = memoryCache.get(key);
-  if (!entry) return null;
-  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-    memoryCache.delete(key);
+  if (entry) {
+    if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+      memoryCache.delete(key);
+    } else {
+      return entry.data;
+    }
+  }
+
+  loadPersistedCache();
+  const persistedEntry = persistedCache.get(key);
+  if (!persistedEntry) return null;
+  if (Date.now() - persistedEntry.timestamp > CACHE_TTL_MS) {
+    persistedCache.delete(key);
+    savePersistedCache();
     return null;
   }
-  return entry.data;
+  memoryCache.set(key, persistedEntry);
+  return persistedEntry.data;
 }
 
 function setCache(key, data) {
-  memoryCache.set(key, { data, timestamp: Date.now() });
+  const entry = { data, timestamp: Date.now() };
+  memoryCache.set(key, entry);
+  loadPersistedCache();
+  persistedCache.set(key, entry);
+  savePersistedCache();
 }
 
 async function request(path, params) {
-  const response = await fetch(buildUrl(path, params), {
-    headers: {},
-  });
+  const url = buildUrl(path, params);
+  const existingRequest = inFlightRequests.get(url);
+  if (existingRequest) return existingRequest;
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`PandaScore error ${response.status}: ${text}`);
+  const requestPromise = (async () => {
+    const response = await fetch(url, {
+      headers: {},
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`PandaScore error ${response.status}: ${text}`);
+    }
+
+    return response.json();
+  })();
+
+  inFlightRequests.set(url, requestPromise);
+
+  try {
+    return await requestPromise;
+  } finally {
+    inFlightRequests.delete(url);
   }
-
-  return response.json();
 }
 
 async function safeRequest(path, params) {

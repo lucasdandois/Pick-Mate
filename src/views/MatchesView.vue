@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <p class="text-xs uppercase tracking-[0.4em] text-emerald-300/80">Calendrier</p>
-        <h2 class="mt-2 font-teko text-4xl uppercase text-white">Planning des matchs</h2>
+        <h2 class="mt-2 font-teko text-4xl uppercase text-white">Board Des Matchs</h2>
         <p class="mt-2 text-xs uppercase tracking-[0.3em] text-zinc-400">Mois: {{ monthLabel }}</p>
       </div>
       <div class="flex flex-wrap gap-2">
@@ -28,12 +28,13 @@
       </div>
     </div>
 
-    <div class="mt-6">
-      <div class="flex flex-wrap gap-2">
+    <div class="mt-6 rounded-2xl border border-white/10 bg-white/5 p-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="px-2 text-[10px] uppercase tracking-[0.25em] text-zinc-500">Tri par jeu</p>
         <button
           v-for="game in games"
           :key="game.name"
-          class="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.25em]"
+          class="rounded-full border px-4 py-2 text-[10px] uppercase tracking-[0.25em]"
           :class="selectedGame === game.name
             ? 'border-emerald-400 bg-emerald-400 text-black'
             : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
@@ -42,8 +43,9 @@
           {{ game.name }} ({{ game.count }})
         </button>
       </div>
+    </div>
 
-      <div class="mt-6 space-y-4">
+    <div class="mt-6 space-y-4">
         <div v-if="loading" class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300">
           Chargement PandaScore...
         </div>
@@ -53,34 +55,40 @@
         <div
           v-for="match in filteredMatches"
           :key="match.id"
-          class="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-6 md:flex-row md:items-center md:justify-between"
+          class="rounded-2xl border border-white/10 bg-white/5 p-5"
         >
-          <div>
-            <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
-            <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
-            <p class="mt-1 text-xs text-zinc-500">{{ match.videogame?.name || 'Jeu non defini' }}</p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span
-                v-for="pill in getGamePills(match)"
-                :key="pill.label"
-                class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
-                :class="pill.className"
-              >
-                {{ pill.label }}
-              </span>
-              <span
-                v-for="badge in getFilteredSeriesBadges(match)"
-                :key="badge"
-                class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
-                :class="getSeriesBadgeClass(badge)"
-              >
-                {{ badge }}
-              </span>
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
+              <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
+              <p class="mt-1 text-xs text-zinc-500">{{ match.videogame?.name || 'Jeu non defini' }}</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="pill in getGamePills(match)"
+                  :key="pill.label"
+                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                  :class="pill.className"
+                >
+                  {{ pill.label }}
+                </span>
+                <span
+                  v-for="badge in getFilteredSeriesBadges(match)"
+                  :key="badge"
+                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                  :class="getSeriesBadgeClass(badge)"
+                >
+                  {{ badge }}
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
+              <button class="rounded-full border border-emerald-400/50 bg-black/40 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-emerald-200">
+                Ajouter
+              </button>
             </div>
           </div>
-          <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
         </div>
-      </div>
     </div>
   </section>
 </template>

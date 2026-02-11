@@ -1,9 +1,8 @@
 <template>
   <section class="mx-auto max-w-6xl px-6 pb-24 pt-12">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div>
-        <p class="text-xs uppercase tracking-[0.4em] text-emerald-300/80">Pick'em</p>
-        <h2 class="mt-2 font-teko text-4xl uppercase text-white">Choisis tes vainqueurs</h2>
+        <h2 class="font-teko text-4xl uppercase text-white">Pick'em</h2>
       </div>
       <div class="text-xs uppercase tracking-[0.3em] text-zinc-400">
         Picks: <span class="text-emerald-300">{{ pickCount }}</span>
@@ -21,6 +20,7 @@
     </div>
 
     <div class="mt-6">
+      <p class="mb-2 px-1 text-[10px] uppercase tracking-[0.25em] text-zinc-500">Jeux Avec Matchs</p>
       <div class="flex flex-wrap gap-2">
         <button
           v-for="game in games"
@@ -45,9 +45,9 @@
       <div
         v-for="match in filteredMatches"
         :key="match.id"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6"
+        class="rounded-2xl border border-white/10 bg-white/5 p-5"
       >
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
             <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
@@ -72,21 +72,23 @@
           <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
         </div>
 
-        <div class="mt-4 flex flex-col gap-3 md:grid md:grid-cols-3">
-          <button
-            v-for="opponent in getOpponents(match)"
-            :key="opponent.id"
-            class="flex w-full items-center justify-between rounded-xl border px-4 py-3 text-sm uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60 md:w-fit md:max-w-full md:justify-self-start"
-            :class="picks[match.id] === opponent.id
-              ? 'border-emerald-400 bg-emerald-400 text-black'
-              : 'border-white/10 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-            :disabled="locked || isMatchStarted(match)"
-            @click="selectPick(match.id, opponent.id)"
-          >
-            <span>{{ opponent.name }}</span>
-            <span class="text-xs text-black/70" v-if="picks[match.id] === opponent.id">Pick</span>
-          </button>
-          <div class="order-3 md:order-none">
+        <div class="mt-4 grid gap-3 lg:grid-cols-[1fr_1fr_auto]">
+          <div class="grid gap-2 sm:grid-cols-2 lg:col-span-2">
+            <button
+              v-for="opponent in getOpponents(match)"
+              :key="opponent.id"
+              class="flex w-full items-center justify-between rounded-xl border px-4 py-3 text-sm uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
+              :class="picks[match.id] === opponent.id
+                ? 'border-emerald-400 bg-emerald-400 text-black'
+                : 'border-white/10 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
+              :disabled="locked || isMatchStarted(match)"
+              @click="selectPick(match.id, opponent.id)"
+            >
+              <span>{{ opponent.name }}</span>
+              <span class="text-xs text-black/70" v-if="picks[match.id] === opponent.id">Pick</span>
+            </button>
+          </div>
+          <div class="lg:col-span-2">
             <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Score exact</p>
             <div class="mt-2 flex flex-wrap gap-2">
               <button
@@ -103,16 +105,18 @@
               </button>
             </div>
           </div>
-          <button
-            class="rounded-xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
-            :class="confirmed[match.id]
-              ? 'border-emerald-400 bg-emerald-400 text-black'
-              : 'border-emerald-400/60 text-emerald-200'"
-            :disabled="locked || !picks[match.id] || !scorePicks[match.id] || confirmed[match.id] || isMatchStarted(match)"
-            @click="handleConfirmPick(match.id)"
-          >
-            {{ confirmed[match.id] ? 'Valide' : 'Valider' }}
-          </button>
+          <div class="lg:row-span-2 lg:flex lg:items-end">
+            <button
+              class="w-full rounded-xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-60"
+              :class="confirmed[match.id]
+                ? 'border-emerald-400 bg-emerald-400 text-black'
+                : 'border-emerald-400/60 bg-black/40 text-emerald-200'"
+              :disabled="locked || !picks[match.id] || !scorePicks[match.id] || confirmed[match.id] || isMatchStarted(match)"
+              @click="handleConfirmPick(match.id)"
+            >
+              {{ confirmed[match.id] ? 'Valide' : 'Valider Pick' }}
+            </button>
+          </div>
         </div>
         <p v-if="isMatchStarted(match)" class="mt-3 text-xs uppercase tracking-[0.25em] text-zinc-500">
           Match lance, picks verrouilles

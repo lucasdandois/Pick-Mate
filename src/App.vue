@@ -7,13 +7,13 @@
     </div>
 
     <nav class="relative z-20 border-b border-white/10 bg-black/60 backdrop-blur-xl">
-      <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+      <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:h-20 sm:px-6">
         <RouterLink to="/" class="flex items-center gap-3">
-          <div class="flex h-20 w-20 items-center justify-center  ">
+          <div class="flex h-12 w-12 items-center justify-center sm:h-16 sm:w-16">
             <img
               src="/public/Fichier 2.svg"
               alt="Gentle Mates logo"
-              class="h-20 w-20 object-contain"
+              class="h-10 w-10 object-contain sm:h-14 sm:w-14"
             />
           </div>
           <div>
@@ -43,13 +43,13 @@
         </button>
       </div>
 
-      <div v-if="mobileMenuOpen" class="lg:hidden border-t border-white/10 bg-black/80 px-6 py-4">
-        <div class="flex flex-col gap-3">
+      <div v-if="mobileMenuOpen" class="lg:hidden border-t border-white/10 bg-black/80 px-4 py-4 sm:px-6">
+        <div class="grid grid-cols-2 gap-3">
           <RouterLink
             v-for="item in navItems"
             :key="item.name"
             :to="item.href"
-            class="rounded-lg border border-white/10 px-4 py-2 text-sm uppercase tracking-widest text-zinc-200"
+            class="rounded-lg border border-white/10 px-4 py-2 text-center text-sm uppercase tracking-widest text-zinc-200"
             @click="toggleMenu"
           >
             {{ item.name }}
