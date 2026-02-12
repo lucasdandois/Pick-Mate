@@ -4,8 +4,7 @@
       <div class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
         <p class="text-xs uppercase tracking-[0.4em] text-emerald-300/80">Gentle Mate Pick'em</p>
         <h1 class="mt-3 font-teko text-4xl uppercase leading-[0.92] text-white sm:text-6xl">
-          JOUEZ STRATEGIQUE.<br />
-          PARIEZ <span class="text-emerald-300">GENTLE MATES</span>.
+          JOUEZ STRATEGIQUE. PARIEZ <span class="text-emerald-300">GENTLE MATES</span>.
         </h1>
         <p class="mt-4 max-w-2xl text-sm text-zinc-300 sm:text-base">
           Analysez les rencontres, placez vos mises et suivez l’action en direct.

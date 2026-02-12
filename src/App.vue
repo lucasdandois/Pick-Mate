@@ -11,7 +11,7 @@
         <RouterLink to="/" class="flex items-center gap-3">
           <div class="flex h-12 w-12 items-center justify-center sm:h-16 sm:w-16">
             <img
-              src="/public/Fichier 2.svg"
+              src="/Fichier 2.svg"
               alt="Gentle Mates logo"
               class="h-10 w-10 object-contain sm:h-14 sm:w-14"
             />
@@ -33,7 +33,13 @@
           </RouterLink>
         </div>
 
-        <button class="lg:hidden" @click="toggleMenu" aria-label="Open menu">
+        <button
+          class="lg:hidden"
+          @click="toggleMenu"
+          aria-label="Open menu"
+          aria-controls="mobile-nav"
+          :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
+        >
           <svg v-if="!mobileMenuOpen" class="h-6 w-6 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -43,7 +49,7 @@
         </button>
       </div>
 
-      <div v-if="mobileMenuOpen" class="lg:hidden border-t border-white/10 bg-black/80 px-4 py-4 sm:px-6">
+      <div id="mobile-nav" v-if="mobileMenuOpen" class="lg:hidden border-t border-white/10 bg-black/80 px-4 py-4 sm:px-6">
         <div class="grid grid-cols-2 gap-3">
           <RouterLink
             v-for="item in navItems"
