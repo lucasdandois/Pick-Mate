@@ -184,7 +184,7 @@ const router = useRouter();
 const route = useRoute();
 const pickedSummary = computed(() => {
   const rows = (filteredMatches.value || [])
-    .filter((match) => Boolean(picks.value?.[match.id] || scorePicks.value?.[match.id]))
+    .filter((match) => Boolean(confirmed.value?.[match.id]))
     .map((match) => {
       const opponents = getOpponents(match);
       const pickedTeamId = picks.value?.[match.id];
@@ -203,7 +203,7 @@ const pickedSummary = computed(() => {
 
 const unplayedMatches = computed(() =>
   (filteredMatches.value || []).filter(
-    (match) => !picks.value?.[match.id] && !scorePicks.value?.[match.id] && !confirmed.value?.[match.id],
+    (match) => !confirmed.value?.[match.id],
   ),
 );
 
