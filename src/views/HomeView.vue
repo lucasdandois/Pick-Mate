@@ -29,22 +29,23 @@
           </div>
 
           <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Mode Rapide</p>
-          <p class="mt-3 text-sm text-zinc-300">Acces direct aux picks et au calendrier de matche {{ teamName }}.</p>
-          <div class="mt-4 grid grid-cols-2 gap-2">
-            <RouterLink
-              to="/pickem"
-              class="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-center text-xs uppercase tracking-[0.25em] text-zinc-200 hover:border-emerald-400/60"
-            >
-              Pick'em
-            </RouterLink>
-            <RouterLink
-              to="/matches"
-              class="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-center text-xs uppercase tracking-[0.25em] text-zinc-200 hover:border-emerald-400/60"
-            >
-              A venir
-            </RouterLink>
-          </div>
+            <div class="flex items-center justify-between">
+              <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Classement</p>
+              <RouterLink to="/leaderboard" class="text-[10px] uppercase tracking-[0.2em] text-zinc-400">Voir tout</RouterLink>
+            </div>
+            <div class="mt-3 space-y-2">
+              <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
+              <p v-else-if="leaderboardError" class="text-xs text-red-300">{{ leaderboardError }}</p>
+              <div
+                v-else
+                v-for="(player, index) in topPlayers"
+                :key="`left-rank-${player.id}`"
+                class="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
+              >
+                <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
+                <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
+              </div>
+            </div>
           </div>
 
           <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -128,26 +129,6 @@
               </div>
               <p v-if="!pickHistoryLoading && !pickHistoryError && pickSummary.length === 0" class="text-xs text-zinc-400">
                 Aucun pick enregistre.
-              </p>
-            </div>
-          </div>
-
-          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Top 4 Joueurs</p>
-            <div class="mt-3 space-y-2">
-              <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
-              <p v-else-if="leaderboardError" class="text-xs text-red-300">{{ leaderboardError }}</p>
-              <div
-                v-else
-                v-for="(player, index) in topPlayers"
-                :key="player.id"
-                class="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
-              >
-                <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
-                <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
-              </div>
-              <p v-if="!leaderboardLoading && !leaderboardError && topPlayers.length === 0" class="text-xs text-zinc-400">
-                Aucun joueur classe.
               </p>
             </div>
           </div>
