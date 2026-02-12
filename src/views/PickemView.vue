@@ -68,13 +68,13 @@
             {{ error }}
           </div>
           <div
-            v-else-if="filteredMatches.length === 0"
+            v-else-if="unplayedMatches.length === 0"
             class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
           >
-            Aucun match pour ce filtre.
+            Tous les matchs de ce filtre ont deja un pick.
           </div>
           <div
-            v-for="match in filteredMatches"
+            v-for="match in unplayedMatches"
             :key="match.id"
             class="rounded-2xl border border-white/10 bg-white/5 p-5"
           >
@@ -200,6 +200,12 @@ const pickedSummary = computed(() => {
     });
   return rows;
 });
+
+const unplayedMatches = computed(() =>
+  (filteredMatches.value || []).filter(
+    (match) => !picks.value?.[match.id] && !scorePicks.value?.[match.id] && !confirmed.value?.[match.id],
+  ),
+);
 
 const applyRouteGameFilter = () => {
   const gameFromQuery = typeof route.query?.game === 'string' ? route.query.game : null;
