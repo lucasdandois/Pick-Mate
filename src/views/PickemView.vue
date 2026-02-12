@@ -35,51 +35,55 @@
         </button>
       </div>
 
-      <div class="mt-4 flex flex-wrap gap-2">
-        <button
-          class="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.25em]"
-          :class="activeTab === 'feed'
-            ? 'border-emerald-400 bg-emerald-400 text-black'
-            : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-          @click="activeTab = 'feed'"
-        >
-          Fil Des Matchs ({{ feedMatches.length }})
-        </button>
-        <button
-          class="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.25em]"
-          :class="activeTab === 'history'
-            ? 'border-emerald-400 bg-emerald-400 text-black'
-            : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-          @click="activeTab = 'history'"
-        >
-          Vos Paris ({{ validatedMatches.length }})
-        </button>
-      </div>
+      <div class="mt-6 grid gap-4 md:grid-cols-[220px_1fr]">
+        <aside class="rounded-2xl border border-white/10 bg-white/5 p-3 md:sticky md:top-24 md:h-fit">
+          <p class="px-2 text-[10px] uppercase tracking-[0.25em] text-zinc-500">Onglets</p>
+          <div class="mt-3 space-y-2">
+            <button
+              class="w-full rounded-xl border px-4 py-3 text-left text-xs uppercase tracking-[0.25em]"
+              :class="activeTab === 'feed'
+                ? 'border-emerald-400 bg-emerald-400 text-black'
+                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
+              @click="activeTab = 'feed'"
+            >
+              Fil Des Matchs ({{ feedMatches.length }})
+            </button>
+            <button
+              class="w-full rounded-xl border px-4 py-3 text-left text-xs uppercase tracking-[0.25em]"
+              :class="activeTab === 'history'
+                ? 'border-emerald-400 bg-emerald-400 text-black'
+                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
+              @click="activeTab = 'history'"
+            >
+              Vos Paris ({{ validatedMatches.length }})
+            </button>
+          </div>
+        </aside>
 
-      <div class="mt-6 space-y-4">
-      <div v-if="loading" class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300">
-        Chargement PandaScore...
-      </div>
-      <div v-else-if="error" class="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-sm text-red-200">
-        {{ error }}
-      </div>
-      <div
-        v-else-if="activeTab === 'feed' && feedMatches.length === 0"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
-      >
-        Aucun match a valider pour ce filtre.
-      </div>
-      <div
-        v-else-if="activeTab === 'history' && validatedMatches.length === 0"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
-      >
-        Aucun pari valide pour ce filtre.
-      </div>
-      <div
-        v-for="match in activeTab === 'feed' ? feedMatches : validatedMatches"
-        :key="match.id"
-        class="rounded-2xl border border-white/10 bg-white/5 p-5"
-      >
+        <div class="space-y-4">
+          <div v-if="loading" class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300">
+            Chargement PandaScore...
+          </div>
+          <div v-else-if="error" class="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-sm text-red-200">
+            {{ error }}
+          </div>
+          <div
+            v-else-if="activeTab === 'feed' && feedMatches.length === 0"
+            class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
+          >
+            Aucun match a valider pour ce filtre.
+          </div>
+          <div
+            v-else-if="activeTab === 'history' && validatedMatches.length === 0"
+            class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
+          >
+            Aucun pari valide pour ce filtre.
+          </div>
+          <div
+            v-for="match in activeTab === 'feed' ? feedMatches : validatedMatches"
+            :key="match.id"
+            class="rounded-2xl border border-white/10 bg-white/5 p-5"
+          >
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
@@ -154,7 +158,8 @@
         <p v-if="isMatchStarted(match)" class="mt-3 text-xs uppercase tracking-[0.25em] text-zinc-500">
           Match lance, picks verrouilles
         </p>
-      </div>
+          </div>
+        </div>
       </div>
     </div>
 
