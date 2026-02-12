@@ -51,43 +51,6 @@
             </div>
           </div>
 
-          <div class="hidden rounded-2xl border border-white/10 bg-white/5 p-4 xl:block">
-            <div class="flex items-center justify-between">
-              <p class="text-xs uppercase tracking-[0.35em] text-emerald-300">Matchs Disponibles</p>
-              <RouterLink to="/matches" class="text-xs uppercase tracking-[0.3em] text-zinc-400">Voir tout</RouterLink>
-            </div>
-
-            <div v-if="loading" class="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300">
-              Chargement
-            </div>
-            <div v-else-if="error" class="mt-4 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
-              {{ error }}
-            </div>
-
-            <div v-else class="mt-4 space-y-3">
-              <div
-                v-for="match in homeMatches"
-                :key="match.id"
-                class="rounded-2xl border border-white/10 bg-black/40 p-4"
-              >
-                <div>
-                  <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
-                  <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
-                  <div class="mt-2 flex flex-wrap gap-2">
-                    <span
-                      v-for="badge in getMatchBadges(match)"
-                      :key="`${match.id}-${badge.label}`"
-                      class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
-                      :class="badge.className"
-                    >
-                      {{ badge.label }}
-                    </span>
-                  </div>
-                  <p class="mt-2 text-xs uppercase tracking-[0.25em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </aside>
 
         <main class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
@@ -129,20 +92,62 @@
             </div>
           </div>
 
-          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resume Matchs</p>
-          <p class="mt-2 text-[11px] text-zinc-400">Vue rapide du planning Gentle Mates.</p>
-          <div class="mt-3 grid grid-cols-1 gap-2">
-            <div class="flex min-h-[84px] flex-col items-center justify-center rounded-xl border border-white/10 bg-black/40 p-2 text-center">
-              <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Matchs A Venir</p>
-              <p class="mt-1 text-sm font-semibold text-emerald-300">{{ upcomingCount }}</p>
+          <div class="xl:hidden">
+            <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resume Matchs</p>
+              <p class="mt-2 text-[11px] text-zinc-400">Vue rapide du planning Gentle Mates.</p>
+              <div class="mt-3 grid grid-cols-1 gap-2">
+                <div class="flex min-h-[84px] flex-col items-center justify-center rounded-xl border border-white/10 bg-black/40 p-2 text-center">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Matchs A Venir</p>
+                  <p class="mt-1 text-sm font-semibold text-emerald-300">{{ upcomingCount }}</p>
+                </div>
+                <div class="flex min-h-[84px] flex-col items-center justify-center rounded-xl border border-white/10 bg-black/40 p-2 text-center">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Matchs Live</p>
+                  <p class="mt-1 text-sm font-semibold text-emerald-300">{{ runningCount }}</p>
+                </div>
+                <div class="flex min-h-[84px] flex-col items-center justify-center rounded-xl border border-white/10 bg-black/40 p-2 text-center">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Jeux Avec Matchs</p>
+                  <p class="mt-1 text-sm font-semibold text-emerald-300">{{ gameCount }}</p>
+                </div>
+              </div>
             </div>
-            <div class="flex min-h-[84px] flex-col items-center justify-center rounded-xl border border-white/10 bg-black/40 p-2 text-center">
-              <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Matchs Live</p>
-              <p class="mt-1 text-sm font-semibold text-emerald-300">{{ runningCount }}</p>
+          </div>
+
+          <div class="hidden xl:block">
+            <div class="flex items-center justify-between">
+              <p class="text-xs uppercase tracking-[0.35em] text-emerald-300">Matchs Disponibles</p>
+              <RouterLink to="/matches" class="text-xs uppercase tracking-[0.3em] text-zinc-400">Voir tout</RouterLink>
             </div>
-            <div class="flex min-h-[84px] flex-col items-center justify-center rounded-xl border border-white/10 bg-black/40 p-2 text-center">
-              <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Jeux Avec Matchs</p>
-              <p class="mt-1 text-sm font-semibold text-emerald-300">{{ gameCount }}</p>
+
+            <div v-if="loading" class="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300">
+              Chargement
+            </div>
+            <div v-else-if="error" class="mt-4 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+              {{ error }}
+            </div>
+
+            <div v-else class="mt-4 space-y-3">
+              <div
+                v-for="match in homeMatches"
+                :key="`desktop-${match.id}`"
+                class="rounded-2xl border border-white/10 bg-black/40 p-4"
+              >
+                <div>
+                  <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
+                  <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <span
+                      v-for="badge in getMatchBadges(match)"
+                      :key="`desktop-${match.id}-${badge.label}`"
+                      class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                      :class="badge.className"
+                    >
+                      {{ badge.label }}
+                    </span>
+                  </div>
+                  <p class="mt-2 text-xs uppercase tracking-[0.25em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
+                </div>
+              </div>
             </div>
           </div>
         </main>
