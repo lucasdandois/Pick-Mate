@@ -83,8 +83,11 @@
             </div>
             <div class="flex items-center gap-2">
               <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
-              <button class="rounded-full border border-emerald-400/50 bg-black/40 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-emerald-200">
-                Ajouter
+              <button
+                class="rounded-full border border-emerald-400/50 bg-black/40 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-emerald-200"
+                @click="goToPickem(match)"
+              >
+                Parier
               </button>
             </div>
           </div>
@@ -94,6 +97,7 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import {
   formatMatchDate,
   getMatchMeta,
@@ -103,8 +107,21 @@ import {
   useMonthlyMatches,
 } from '../services/pickemCore';
 
+const router = useRouter();
 const { matches, loading, error, refresh, monthLabel, nextMonth, prevMonth } = useMonthlyMatches();
 const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(matches);
+
+const goToPickem = (match) => {
+  const matchId = match?.id ? String(match.id) : '';
+  const game = match?.videogame?.name || '';
+  router.push({
+    path: '/pickem',
+    query: {
+      ...(game ? { game } : {}),
+      ...(matchId ? { matchId } : {}),
+    },
+  });
+};
 
 const getGamePills = (match) => {
   const name = (match?.videogame?.name || '').toLowerCase();

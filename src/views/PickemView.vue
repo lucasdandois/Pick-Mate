@@ -76,6 +76,7 @@
           <div
             v-for="match in unplayedMatches"
             :key="match.id"
+            :id="`pickem-match-${match.id}`"
             class="rounded-2xl border border-white/10 bg-white/5 p-5"
           >
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -162,7 +163,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { computed, nextTick, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
 import {
@@ -218,6 +219,20 @@ const applyRouteGameFilter = () => {
 
 onMounted(applyRouteGameFilter);
 watch(() => route.query?.game, applyRouteGameFilter);
+
+const scrollToRouteMatch = async () => {
+  const targetMatchId = typeof route.query?.matchId === 'string' ? route.query.matchId : '';
+  if (!targetMatchId) return;
+  await nextTick();
+  const el = document.getElementById(`pickem-match-${targetMatchId}`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+onMounted(scrollToRouteMatch);
+watch(() => route.query?.matchId, scrollToRouteMatch);
+watch(unplayedMatches, scrollToRouteMatch, { deep: true });
 
 const handleConfirmPick = (matchId) => {
   if (!user.value) {
