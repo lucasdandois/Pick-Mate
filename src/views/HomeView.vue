@@ -7,7 +7,7 @@
           Tout les Paris de <span class="text-emerald-300">{{ teamName }}</span>
         </h1>
         <p class="mt-4 max-w-2xl text-sm text-zinc-300 sm:text-base">
-          Tous les matchs Gentle Mates, tous les paris, en un clin dâ€™Å“il.
+          Tous les matchs Gentle Mates, tous les paris, en un clin d'oeil.
         </p>
       </div>
 
