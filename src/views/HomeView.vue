@@ -107,6 +107,32 @@
 
         <aside class="space-y-4">
           <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resume Picks</p>
+            <div class="mt-3 space-y-2">
+              <p v-if="pickHistoryLoading" class="text-xs text-zinc-400">Chargement...</p>
+              <p v-else-if="pickHistoryError" class="text-xs text-red-300">{{ pickHistoryError }}</p>
+              <div
+                v-else
+                v-for="item in pickSummary"
+                :key="item.id"
+                class="rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
+              >
+                <p class="text-zinc-200">{{ item.title }}</p>
+                <p class="mt-1 text-zinc-400">Pick: {{ item.pick }}</p>
+                <div class="mt-2 flex items-center justify-between">
+                  <p class="text-zinc-500">{{ item.date }}</p>
+                  <p :class="item.confirmed ? 'text-emerald-300' : 'text-amber-300'">
+                    {{ item.confirmed ? 'Valide' : 'En attente' }}
+                  </p>
+                </div>
+              </div>
+              <p v-if="!pickHistoryLoading && !pickHistoryError && pickSummary.length === 0" class="text-xs text-zinc-400">
+                Aucun pick enregistre.
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
             <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Top 4 Joueurs</p>
             <div class="mt-3 space-y-2">
               <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
@@ -151,30 +177,6 @@
           </div>
           </div>
         </aside>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 xl:col-span-3">
-          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Repartition Par Jeu</p>
-          <p class="mt-2 text-[11px] text-zinc-400">Volume de matchs Gentle Mates par jeu.</p>
-          <div class="mt-3 space-y-2">
-            <div
-              v-for="item in gameBreakdown"
-              :key="item.name"
-              class="rounded-xl border border-white/10 bg-black/40 p-3"
-            >
-              <div class="flex items-center justify-between text-xs uppercase tracking-[0.2em]">
-                <p class="text-zinc-200">{{ item.name }}</p>
-                <p class="text-emerald-300">{{ item.count }} matchs</p>
-              </div>
-              <div class="mt-2 h-2 rounded-full bg-black/60">
-                <div
-                  class="h-2 rounded-full bg-gradient-to-r from-emerald-400/80 to-fuchsia-400/80"
-                  :style="{ width: `${item.percent}%` }"
-                ></div>
-              </div>
-            </div>
-            <p v-if="gameBreakdown.length === 0" class="text-xs text-zinc-400">Aucune donnee jeu disponible.</p>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -190,6 +192,7 @@ import {
   getMatchTitle,
   useBrandInfo,
   useLeaderboard,
+  usePickHistory,
   usePastMatches,
   useUpcomingMatches,
 } from '../services/pickemCore';
@@ -198,8 +201,10 @@ const { teamName } = useBrandInfo();
 const { matches, loading, error } = useUpcomingMatches();
 const { matches: pastMatches } = usePastMatches({ perPage: 10 });
 const { players: topPlayers, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard(4);
+const { history: pickHistory, loading: pickHistoryLoading, error: pickHistoryError } = usePickHistory();
 const homeMatches = computed(() => (matches.value || []).slice(0, 5));
 const ticketResults = computed(() => (pastMatches.value || []).slice(0, 2));
+const pickSummary = computed(() => (pickHistory.value || []).slice(0, 4));
 const upcomingCount = computed(() => (matches.value || []).length);
 const runningCount = computed(() =>
   (matches.value || []).filter((match) => ['running', 'live', 'in_progress'].includes(String(match?.status || '').toLowerCase())).length,
@@ -207,22 +212,6 @@ const runningCount = computed(() =>
 const gameCount = computed(() => {
   const unique = new Set((matches.value || []).map((match) => match?.videogame?.name).filter(Boolean));
   return unique.size;
-});
-const gameBreakdown = computed(() => {
-  const counters = new Map();
-  (matches.value || []).forEach((match) => {
-    const name = match?.videogame?.name || 'Autre';
-    counters.set(name, (counters.get(name) || 0) + 1);
-  });
-  const rows = Array.from(counters.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 4);
-  const maxCount = rows[0]?.count || 1;
-  return rows.map((row) => ({
-    ...row,
-    percent: Math.max(15, Math.round((row.count / maxCount) * 100)),
-  }));
 });
 
 const teams = computed(() => [
