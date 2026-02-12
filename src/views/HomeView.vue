@@ -4,10 +4,10 @@
       <div class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
         <p class="text-xs uppercase tracking-[0.4em] text-emerald-300/80">Gentle Mate Pick'em</p>
         <h1 class="mt-3 font-teko text-4xl uppercase leading-[0.92] text-white sm:text-6xl">
-          Tout les Paris de <span class="text-emerald-300">{{ teamName }}</span>
+          JOUEZ STRATÉGIQUE. PARIEZ GENTLE MATES.
         </h1>
         <p class="mt-4 max-w-2xl text-sm text-zinc-300 sm:text-base">
-          Tous les matchs Gentle Mates, tous les paris, en un clin d'oeil.
+          Analysez les rencontres, placez vos mises et suivez l’action en direct.
         </p>
       </div>
 
@@ -45,6 +45,9 @@
                 <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
                 <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
               </div>
+              <p v-if="!leaderboardLoading && !leaderboardError && topPlayers.length === 0" class="text-xs text-zinc-400">
+                Aucun joueur classe.
+              </p>
             </div>
           </div>
 
@@ -136,25 +139,29 @@
           <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resultats</p>
           <div class="mt-4 space-y-2">
-            <div
-              v-for="match in ticketResults"
-              :key="match.id"
-              class="rounded-xl border border-white/10 bg-black/40 p-3"
-            >
-              <p class="text-sm text-white">{{ getMatchTitle(match) }}</p>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <span
-                  v-for="badge in getMatchBadges(match)"
-                  :key="`${match.id}-result-${badge.label}`"
-                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
-                  :class="badge.className"
-                >
-                  {{ badge.label }}
-                </span>
+            <p v-if="pastLoading" class="text-xs text-zinc-400">Chargement...</p>
+            <p v-else-if="pastError" class="text-xs text-red-300">{{ pastError }}</p>
+            <template v-else>
+              <div
+                v-for="match in ticketResults"
+                :key="match.id"
+                class="rounded-xl border border-white/10 bg-black/40 p-3"
+              >
+                <p class="text-sm text-white">{{ getMatchTitle(match) }}</p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <span
+                    v-for="badge in getMatchBadges(match)"
+                    :key="`${match.id}-result-${badge.label}`"
+                    class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                    :class="badge.className"
+                  >
+                    {{ badge.label }}
+                  </span>
+                </div>
+                <p class="mt-1 text-xs uppercase tracking-[0.22em] text-emerald-300">{{ getMatchScoreline(match) }}</p>
               </div>
-              <p class="mt-1 text-xs uppercase tracking-[0.22em] text-emerald-300">{{ getMatchScoreline(match) }}</p>
-            </div>
-            <p v-if="ticketResults.length === 0" class="text-xs text-zinc-400">Aucun resultat disponible.</p>
+              <p v-if="ticketResults.length === 0" class="text-xs text-zinc-400">Aucun resultat disponible.</p>
+            </template>
           </div>
           </div>
         </aside>
@@ -171,16 +178,15 @@ import {
   getMatchMeta,
   getMatchScoreline,
   getMatchTitle,
-  useBrandInfo,
   useLeaderboard,
   usePickHistory,
   usePastMatches,
   useUpcomingMatches,
 } from '../services/pickemCore';
 
-const { teamName } = useBrandInfo();
+
 const { matches, loading, error } = useUpcomingMatches();
-const { matches: pastMatches } = usePastMatches({ perPage: 10 });
+const { matches: pastMatches, loading: pastLoading, error: pastError } = usePastMatches({ perPage: 10 });
 const { players: topPlayers, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard(4);
 const { history: pickHistory, loading: pickHistoryLoading, error: pickHistoryError } = usePickHistory();
 const homeMatches = computed(() => (matches.value || []).slice(0, 5));

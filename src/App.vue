@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-[#070707] text-zinc-100">
     <div class="fixed inset-0 pointer-events-none">
       <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-400/15 blur-3xl animate-float-soft"></div>
@@ -67,7 +67,11 @@
         <div>
           <p class="font-teko text-xl uppercase tracking-[0.2em] text-white">Gentle Mates Pick'em</p>
           <p class="mt-3 text-sm text-zinc-400">
-            Le hub Pick'em de Gentle Mates : prono, calendrier, resultats et stats.
+           JOUEZ STRATEGIQUE. PARIEZ GENTLE MATES.
+          </p>
+          <p class="mt-3 text-xs text-zinc-500">
+            Site de fan non officiel. Ce site n'est pas lie a Gentle Mates, et Gentle Mates n'est pas responsable
+            du contenu publie ici.
           </p>
         </div>
         <div>
@@ -111,3 +115,4 @@ const navItems = computed(() =>
   }),
 );
 </script>
+
