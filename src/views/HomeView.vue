@@ -11,66 +11,9 @@
         </p>
       </div>
 
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
-        <div class="flex items-center justify-between">
-          <p class="text-xs uppercase tracking-[0.35em] text-emerald-300">Matchs Disponibles</p>
-          <RouterLink to="/matches" class="text-xs uppercase tracking-[0.3em] text-zinc-400">Voir tout</RouterLink>
-        </div>
-
-        <div v-if="loading" class="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300">
-          Chargement
-        </div>
-        <div v-else-if="error" class="mt-4 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
-          {{ error }}
-        </div>
-
-        <div v-else class="mt-4 space-y-3">
-          <div
-            v-for="match in homeMatches"
-            :key="match.id"
-            class="rounded-2xl border border-white/10 bg-black/40 p-4"
-          >
-            <div>
-              <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
-              <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <span
-                  v-for="badge in getMatchBadges(match)"
-                  :key="`${match.id}-${badge.label}`"
-                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
-                  :class="badge.className"
-                >
-                  {{ badge.label }}
-                </span>
-              </div>
-              <p class="mt-2 text-xs uppercase tracking-[0.25em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Top 4 Joueurs</p>
-          <div class="mt-3 space-y-2">
-            <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
-            <p v-else-if="leaderboardError" class="text-xs text-red-300">{{ leaderboardError }}</p>
-            <div
-              v-else
-              v-for="(player, index) in topPlayers"
-              :key="player.id"
-              class="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
-            >
-              <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
-              <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
-            </div>
-            <p v-if="!leaderboardLoading && !leaderboardError && topPlayers.length === 0" class="text-xs text-zinc-400">
-              Aucun joueur classe.
-            </p>
-          </div>
-        </div>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <div class="grid gap-4 xl:grid-cols-[260px_minmax(0,1fr)_300px]">
+        <aside class="space-y-4">
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Equipes</p>
           <div class="mt-4 space-y-2">
             <RouterLink
@@ -83,9 +26,9 @@
               <span class="text-emerald-300">+</span>
             </RouterLink>
           </div>
-        </div>
+          </div>
 
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Mode Rapide</p>
           <p class="mt-3 text-sm text-zinc-300">Acces direct aux picks et au calendrier de matche {{ teamName }}.</p>
           <div class="mt-4 grid grid-cols-2 gap-2">
@@ -102,9 +45,9 @@
               A venir
             </RouterLink>
           </div>
-        </div>
+          </div>
 
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resume Matchs</p>
           <p class="mt-2 text-[11px] text-zinc-400">Vue rapide du planning Gentle Mates.</p>
           <div class="mt-3 grid grid-cols-1 gap-2">
@@ -121,9 +64,69 @@
               <p class="mt-1 text-sm font-semibold text-emerald-300">{{ gameCount }}</p>
             </div>
           </div>
-        </div>
+          </div>
+        </aside>
 
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <main class="rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
+          <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-[0.35em] text-emerald-300">Matchs Disponibles</p>
+            <RouterLink to="/matches" class="text-xs uppercase tracking-[0.3em] text-zinc-400">Voir tout</RouterLink>
+          </div>
+
+          <div v-if="loading" class="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300">
+            Chargement
+          </div>
+          <div v-else-if="error" class="mt-4 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+            {{ error }}
+          </div>
+
+          <div v-else class="mt-4 space-y-3">
+            <div
+              v-for="match in homeMatches"
+              :key="match.id"
+              class="rounded-2xl border border-white/10 bg-black/40 p-4"
+            >
+              <div>
+                <p class="text-sm font-semibold text-white">{{ getMatchTitle(match) }}</p>
+                <p class="mt-1 text-xs text-zinc-400">{{ getMatchMeta(match) }}</p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <span
+                    v-for="badge in getMatchBadges(match)"
+                    :key="`${match.id}-${badge.label}`"
+                    class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                    :class="badge.className"
+                  >
+                    {{ badge.label }}
+                  </span>
+                </div>
+                <p class="mt-2 text-xs uppercase tracking-[0.25em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <aside class="space-y-4">
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Top 4 Joueurs</p>
+            <div class="mt-3 space-y-2">
+              <p v-if="leaderboardLoading" class="text-xs text-zinc-400">Chargement...</p>
+              <p v-else-if="leaderboardError" class="text-xs text-red-300">{{ leaderboardError }}</p>
+              <div
+                v-else
+                v-for="(player, index) in topPlayers"
+                :key="player.id"
+                class="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3 text-xs"
+              >
+                <p class="text-zinc-200">{{ index + 1 }}. {{ player.display_name || 'Joueur' }}</p>
+                <p class="font-semibold text-emerald-300">{{ player.total_points ?? 0 }} pts</p>
+              </div>
+              <p v-if="!leaderboardLoading && !leaderboardError && topPlayers.length === 0" class="text-xs text-zinc-400">
+                Aucun joueur classe.
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Resultats</p>
           <div class="mt-4 space-y-2">
             <div
@@ -146,9 +149,10 @@
             </div>
             <p v-if="ticketResults.length === 0" class="text-xs text-zinc-400">Aucun resultat disponible.</p>
           </div>
-        </div>
+          </div>
+        </aside>
 
-        <div class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 xl:col-span-3">
           <p class="text-xs uppercase tracking-[0.32em] text-emerald-300">Repartition Par Jeu</p>
           <p class="mt-2 text-[11px] text-zinc-400">Volume de matchs Gentle Mates par jeu.</p>
           <div class="mt-3 space-y-2">
