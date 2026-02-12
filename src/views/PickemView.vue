@@ -35,28 +35,28 @@
         </button>
       </div>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-[220px_1fr]">
+      <div class="mt-6 grid gap-4 md:grid-cols-[260px_1fr]">
         <aside class="rounded-2xl border border-white/10 bg-white/5 p-3 md:sticky md:top-24 md:h-fit">
-          <p class="px-2 text-[10px] uppercase tracking-[0.25em] text-zinc-500">Onglets</p>
-          <div class="mt-3 space-y-2">
-            <button
-              class="w-full rounded-xl border px-4 py-3 text-left text-xs uppercase tracking-[0.25em]"
-              :class="activeTab === 'feed'
-                ? 'border-emerald-400 bg-emerald-400 text-black'
-                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-              @click="activeTab = 'feed'"
+          <p class="px-2 text-[10px] uppercase tracking-[0.25em] text-zinc-500">Vos Paris Joues</p>
+          <div class="mt-3 max-h-[420px] space-y-2 overflow-y-auto pr-1">
+            <div
+              v-for="item in pickedSummary"
+              :key="`summary-${item.id}`"
+              class="rounded-xl border border-white/10 bg-black/40 p-3"
             >
-              Fil Des Matchs ({{ feedMatches.length }})
-            </button>
-            <button
-              class="w-full rounded-xl border px-4 py-3 text-left text-xs uppercase tracking-[0.25em]"
-              :class="activeTab === 'history'
-                ? 'border-emerald-400 bg-emerald-400 text-black'
-                : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
-              @click="activeTab = 'history'"
-            >
-              Vos Paris ({{ validatedMatches.length }})
-            </button>
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white">{{ item.title }}</p>
+              <p class="mt-1 text-[11px] uppercase tracking-[0.16em] text-zinc-400">Pick: {{ item.pick }}</p>
+              <p class="mt-1 text-[11px] uppercase tracking-[0.16em] text-zinc-400">Score: {{ item.score }}</p>
+              <p
+                class="mt-2 text-[10px] uppercase tracking-[0.2em]"
+                :class="item.confirmed ? 'text-emerald-300' : 'text-amber-300'"
+              >
+                {{ item.confirmed ? 'Valide' : 'En attente' }}
+              </p>
+            </div>
+            <p v-if="pickedSummary.length === 0" class="px-1 text-xs text-zinc-400">
+              Aucun pick selectionne.
+            </p>
           </div>
         </aside>
 
@@ -68,19 +68,13 @@
             {{ error }}
           </div>
           <div
-            v-else-if="activeTab === 'feed' && feedMatches.length === 0"
+            v-else-if="filteredMatches.length === 0"
             class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
           >
-            Aucun match a valider pour ce filtre.
+            Aucun match pour ce filtre.
           </div>
           <div
-            v-else-if="activeTab === 'history' && validatedMatches.length === 0"
-            class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
-          >
-            Aucun pari valide pour ce filtre.
-          </div>
-          <div
-            v-for="match in activeTab === 'feed' ? feedMatches : validatedMatches"
+            v-for="match in filteredMatches"
             :key="match.id"
             class="rounded-2xl border border-white/10 bg-white/5 p-5"
           >
@@ -168,7 +162,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
 import {
@@ -188,15 +182,24 @@ const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(pic
 const { user } = useAuth();
 const router = useRouter();
 const route = useRoute();
-const activeTab = ref('feed');
-
-const feedMatches = computed(() =>
-  (filteredMatches.value || []).filter((match) => !confirmed.value?.[match.id]),
-);
-
-const validatedMatches = computed(() =>
-  (filteredMatches.value || []).filter((match) => Boolean(confirmed.value?.[match.id])),
-);
+const pickedSummary = computed(() => {
+  const rows = (filteredMatches.value || [])
+    .filter((match) => Boolean(picks.value?.[match.id] || scorePicks.value?.[match.id]))
+    .map((match) => {
+      const opponents = getOpponents(match);
+      const pickedTeamId = picks.value?.[match.id];
+      const pickedTeam = opponents.find((team) => team.id === pickedTeamId);
+      const score = scorePicks.value?.[match.id];
+      return {
+        id: match.id,
+        title: getMatchTitle(match),
+        pick: pickedTeam?.name || '-',
+        score: score ? `${score.scoreA}-${score.scoreB}` : '-',
+        confirmed: Boolean(confirmed.value?.[match.id]),
+      };
+    });
+  return rows;
+});
 
 const applyRouteGameFilter = () => {
   const gameFromQuery = typeof route.query?.game === 'string' ? route.query.game : null;
@@ -216,7 +219,6 @@ const handleConfirmPick = (matchId) => {
     return;
   }
   confirmPick(matchId);
-  activeTab.value = 'history';
 };
 
 const getGamePills = (match) => {
