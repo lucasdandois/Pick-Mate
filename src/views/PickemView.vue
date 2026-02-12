@@ -35,6 +35,27 @@
         </button>
       </div>
 
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button
+          class="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.25em]"
+          :class="activeTab === 'feed'
+            ? 'border-emerald-400 bg-emerald-400 text-black'
+            : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
+          @click="activeTab = 'feed'"
+        >
+          Fil Des Matchs ({{ feedMatches.length }})
+        </button>
+        <button
+          class="rounded-full border px-4 py-2 text-xs uppercase tracking-[0.25em]"
+          :class="activeTab === 'history'
+            ? 'border-emerald-400 bg-emerald-400 text-black'
+            : 'border-white/15 bg-black/40 text-zinc-200 hover:border-emerald-400/60'"
+          @click="activeTab = 'history'"
+        >
+          Vos Paris ({{ validatedMatches.length }})
+        </button>
+      </div>
+
       <div class="mt-6 space-y-4">
       <div v-if="loading" class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300">
         Chargement PandaScore...
@@ -43,7 +64,19 @@
         {{ error }}
       </div>
       <div
-        v-for="match in filteredMatches"
+        v-else-if="activeTab === 'feed' && feedMatches.length === 0"
+        class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
+      >
+        Aucun match a valider pour ce filtre.
+      </div>
+      <div
+        v-else-if="activeTab === 'history' && validatedMatches.length === 0"
+        class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-zinc-300"
+      >
+        Aucun pari valide pour ce filtre.
+      </div>
+      <div
+        v-for="match in activeTab === 'feed' ? feedMatches : validatedMatches"
         :key="match.id"
         class="rounded-2xl border border-white/10 bg-white/5 p-5"
       >
@@ -130,7 +163,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
 import {
@@ -150,6 +183,15 @@ const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(pic
 const { user } = useAuth();
 const router = useRouter();
 const route = useRoute();
+const activeTab = ref('feed');
+
+const feedMatches = computed(() =>
+  (filteredMatches.value || []).filter((match) => !confirmed.value?.[match.id]),
+);
+
+const validatedMatches = computed(() =>
+  (filteredMatches.value || []).filter((match) => Boolean(confirmed.value?.[match.id])),
+);
 
 const applyRouteGameFilter = () => {
   const gameFromQuery = typeof route.query?.game === 'string' ? route.query.game : null;
@@ -169,6 +211,7 @@ const handleConfirmPick = (matchId) => {
     return;
   }
   confirmPick(matchId);
+  activeTab.value = 'history';
 };
 
 const getGamePills = (match) => {
