@@ -84,10 +84,14 @@
             <div class="flex items-center gap-2">
               <p class="text-xs uppercase tracking-[0.3em] text-emerald-300">{{ formatMatchDate(match.begin_at) }}</p>
               <button
-                class="rounded-full border border-emerald-400/50 bg-black/40 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-emerald-200"
+                class="rounded-full border px-3 py-2 text-[10px] uppercase tracking-[0.2em]"
+                :class="isAlreadyConfirmed(match.id)
+                  ? 'cursor-not-allowed border-emerald-400/70 bg-emerald-500/20 text-emerald-100'
+                  : 'border-emerald-400/50 bg-black/40 text-emerald-200 hover:border-emerald-300'"
+                :disabled="isAlreadyConfirmed(match.id)"
                 @click="goToPickem(match)"
               >
-                Parier
+                {{ isAlreadyConfirmed(match.id) ? 'Valide' : 'Parier' }}
               </button>
             </div>
           </div>
@@ -97,6 +101,7 @@
 </template>
 
 <script setup>
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   formatMatchDate,
@@ -110,8 +115,22 @@ import {
 const router = useRouter();
 const { matches, loading, error, refresh, monthLabel, nextMonth, prevMonth } = useMonthlyMatches();
 const { games, selectedGame, filteredMatches, setGame } = useCalendarFilters(matches);
+const CONFIRMED_PICKS_KEY = 'gentle-mates-pickem-confirmed';
+const confirmedPicks = ref({});
+
+const loadConfirmedPicks = () => {
+  try {
+    const raw = localStorage.getItem(CONFIRMED_PICKS_KEY);
+    confirmedPicks.value = raw ? JSON.parse(raw) : {};
+  } catch {
+    confirmedPicks.value = {};
+  }
+};
+
+const isAlreadyConfirmed = (matchId) => Boolean(confirmedPicks.value?.[String(matchId)] || confirmedPicks.value?.[matchId]);
 
 const goToPickem = (match) => {
+  if (isAlreadyConfirmed(match?.id)) return;
   const matchId = match?.id ? String(match.id) : '';
   const game = match?.videogame?.name || '';
   router.push({
@@ -177,4 +196,15 @@ const getSeriesBadgeClass = (badge) => {
   }
   return 'border-fuchsia-400/40 bg-fuchsia-500/10 text-fuchsia-200';
 };
+
+onMounted(() => {
+  loadConfirmedPicks();
+  window.addEventListener('storage', loadConfirmedPicks);
+  window.addEventListener('focus', loadConfirmedPicks);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('storage', loadConfirmedPicks);
+  window.removeEventListener('focus', loadConfirmedPicks);
+});
 </script>
