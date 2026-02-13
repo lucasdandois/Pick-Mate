@@ -104,11 +104,11 @@
           <div class="mt-4 max-h-72 space-y-3 overflow-y-auto pr-1">
             <div v-if="loadingHistory" class="text-xs text-zinc-400">Chargement...</div>
             <div v-else-if="historyError" class="text-xs text-red-300">{{ historyError }}</div>
-            <div v-else-if="history.length === 0" class="text-xs text-zinc-400">
-              Aucun pari enregistre pour le moment.
+            <div v-else-if="pendingHistory.length === 0" class="text-xs text-zinc-400">
+              Aucun pari en attente pour le moment.
             </div>
             <div
-              v-for="item in history"
+              v-for="item in pendingHistory"
               :key="item.id"
               class="rounded-xl border border-white/10 bg-black/40 p-3"
             >
@@ -143,11 +143,18 @@
                   ? 'border-red-500/50'
                   : 'border-white/10'"
             >
-              <p class="text-sm font-semibold text-white">{{ item.title }}</p>
-              <p class="mt-1 text-xs text-zinc-400">{{ item.date }}</p>
-              <p class="mt-2 text-xs uppercase tracking-[0.2em]" :class="item.points > 0 ? 'text-emerald-300' : item.points < 0 ? 'text-red-300' : 'text-zinc-400'">
-                {{ item.points > 0 ? '+' : '' }}{{ item.points }} pts
-              </p>
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-semibold text-white">{{ item.title }}</p>
+                  <p class="mt-1 text-xs text-zinc-400">{{ item.date }}</p>
+                </div>
+                <p
+                  class="text-lg font-semibold uppercase tracking-[0.08em] text-right"
+                  :class="item.points > 0 ? 'text-emerald-300' : item.points < 0 ? 'text-red-300' : 'text-zinc-400'"
+                >
+                  {{ item.points > 0 ? '+' : '' }}{{ item.points }} pts
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -459,4 +466,23 @@ const monthlyHistory = computed(() => {
 const monthlyTotalPoints = computed(() =>
   monthlyHistory.value.reduce((sum, item) => sum + (Number(item.points) || 0), 0),
 );
+
+const pendingHistory = computed(() => {
+  const settledStatuses = new Set(['finished', 'completed', 'cancelled']);
+  const nowTs = Date.now();
+
+  return (history.value || [])
+    .filter((item) => {
+      const status = String(item?.status || '').toLowerCase();
+      if (settledStatuses.has(status)) return false;
+      const beginTs = item?.beginAt ? new Date(item.beginAt).getTime() : null;
+      if (Number.isFinite(beginTs) && beginTs <= nowTs) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      const aTime = new Date(a.beginAt || 0).getTime();
+      const bTime = new Date(b.beginAt || 0).getTime();
+      return aTime - bTime;
+    });
+});
 </script>
