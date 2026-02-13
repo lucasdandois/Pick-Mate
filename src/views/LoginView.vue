@@ -129,7 +129,7 @@
               {{ monthlyTotalPoints >= 0 ? '+' : '' }}{{ monthlyTotalPoints }} pts
             </p>
           </div>
-          <div class="mt-4 space-y-3">
+          <div class="mt-4 max-h-72 space-y-3 overflow-y-auto pr-1">
             <div v-if="monthlyHistory.length === 0" class="text-xs text-zinc-400">
               Aucun pari ce mois-ci.
             </div>
@@ -438,12 +438,15 @@ const monthlyHistory = computed(() => {
   const now = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();
+  const settledStatuses = new Set(['finished', 'completed', 'cancelled']);
 
   return (history.value || [])
     .filter((item) => {
       if (!item?.beginAt) return false;
       const d = new Date(item.beginAt);
       if (Number.isNaN(d.getTime())) return false;
+      const status = String(item?.status || '').toLowerCase();
+      if (!settledStatuses.has(status)) return false;
       return d.getMonth() === month && d.getFullYear() === year;
     })
     .sort((a, b) => {
