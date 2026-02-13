@@ -587,6 +587,7 @@ export function usePickHistory() {
         title: match ? getMatchTitle(match) : `Match #${matchId}`,
         meta: match ? getMatchMeta(match) : '',
         date: match ? formatMatchDate(match.begin_at) : 'Date TBD',
+        beginAt: match?.begin_at || null,
         pick: picked?.name || '—',
         confirmed: Boolean(confirmed.value?.[matchId]),
         points,

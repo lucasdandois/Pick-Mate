@@ -101,7 +101,7 @@
               Rafraichir
             </button>
           </div>
-          <div class="mt-4 space-y-3">
+          <div class="mt-4 max-h-72 space-y-3 overflow-y-auto pr-1">
             <div v-if="loadingHistory" class="text-xs text-zinc-400">Chargement...</div>
             <div v-else-if="historyError" class="text-xs text-red-300">{{ historyError }}</div>
             <div v-else-if="history.length === 0" class="text-xs text-zinc-400">
@@ -117,6 +117,36 @@
               <p class="mt-1 text-xs text-zinc-500">{{ item.date }}</p>
               <p class="mt-2 text-xs uppercase tracking-[0.2em] text-emerald-300">
                 Pick: {{ item.pick }} • {{ item.confirmed ? 'Valide' : 'En attente' }} • {{ item.points }} pts
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-300">
+          <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Resume du mois</p>
+            <p class="text-xs uppercase tracking-[0.2em]" :class="monthlyTotalPoints >= 0 ? 'text-emerald-300' : 'text-red-300'">
+              {{ monthlyTotalPoints >= 0 ? '+' : '' }}{{ monthlyTotalPoints }} pts
+            </p>
+          </div>
+          <div class="mt-4 space-y-3">
+            <div v-if="monthlyHistory.length === 0" class="text-xs text-zinc-400">
+              Aucun pari ce mois-ci.
+            </div>
+            <div
+              v-for="item in monthlyHistory"
+              :key="`month-${item.id}`"
+              class="rounded-xl border bg-black/40 p-3"
+              :class="item.points > 0
+                ? 'border-emerald-500/50'
+                : item.points < 0
+                  ? 'border-red-500/50'
+                  : 'border-white/10'"
+            >
+              <p class="text-sm font-semibold text-white">{{ item.title }}</p>
+              <p class="mt-1 text-xs text-zinc-400">{{ item.date }}</p>
+              <p class="mt-2 text-xs uppercase tracking-[0.2em]" :class="item.points > 0 ? 'text-emerald-300' : item.points < 0 ? 'text-red-300' : 'text-zinc-400'">
+                {{ item.points > 0 ? '+' : '' }}{{ item.points }} pts
               </p>
             </div>
           </div>
@@ -403,4 +433,27 @@ const currentGroup = computed(() => {
   const base = currentRank.value?.name?.split(' ')[0];
   return groupedTiers.value.find((group) => group.name === base) || null;
 });
+
+const monthlyHistory = computed(() => {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+
+  return (history.value || [])
+    .filter((item) => {
+      if (!item?.beginAt) return false;
+      const d = new Date(item.beginAt);
+      if (Number.isNaN(d.getTime())) return false;
+      return d.getMonth() === month && d.getFullYear() === year;
+    })
+    .sort((a, b) => {
+      const aTime = new Date(a.beginAt || 0).getTime();
+      const bTime = new Date(b.beginAt || 0).getTime();
+      return bTime - aTime;
+    });
+});
+
+const monthlyTotalPoints = computed(() =>
+  monthlyHistory.value.reduce((sum, item) => sum + (Number(item.points) || 0), 0),
+);
 </script>
