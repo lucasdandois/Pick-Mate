@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="min-h-screen bg-[#070707] text-zinc-100">
+  <div class="flex min-h-screen flex-col bg-[#070707] text-zinc-100">
     <div class="fixed inset-0 pointer-events-none">
       <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-400/15 blur-3xl animate-float-soft"></div>
       <div class="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-fuchsia-500/10 blur-3xl"></div>
@@ -64,11 +64,11 @@
       </div>
     </nav>
 
-    <main class="relative z-10">
+    <main class="relative z-10 flex-1">
       <RouterView />
     </main>
 
-    <footer class="relative z-10 mt-20 border-t border-white/10 bg-black/60">
+    <footer class="relative z-10 border-t border-white/10 bg-black/60">
       <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 py-12 md:grid-cols-3">
         <div>
           <p class="font-teko text-xl uppercase tracking-[0.2em] text-white">Gentle Mates Pick'em</p>
@@ -129,4 +129,3 @@ const navItems = computed(() =>
   font-family: 'Space Grotesk', sans-serif;
 }
 </style>
-
