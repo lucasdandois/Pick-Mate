@@ -240,7 +240,21 @@ const ticketResults = computed(() =>
     .sort((a, b) => new Date(b?.begin_at || 0).getTime() - new Date(a?.begin_at || 0).getTime())
     .slice(0, 2),
 );
-const pickSummary = computed(() => (pickHistory.value || []).slice(0, 4));
+const pickSummary = computed(() => {
+  const settledStatuses = new Set(['finished', 'completed', 'cancelled']);
+  const nowTs = Date.now();
+
+  return (pickHistory.value || [])
+    .filter((item) => {
+      const status = String(item?.status || '').toLowerCase();
+      if (settledStatuses.has(status)) return false;
+      const beginTs = item?.beginAt ? new Date(item.beginAt).getTime() : null;
+      if (Number.isFinite(beginTs) && beginTs <= nowTs) return false;
+      return true;
+    })
+    .sort((a, b) => new Date(a?.beginAt || 0).getTime() - new Date(b?.beginAt || 0).getTime())
+    .slice(0, 4);
+});
 const upcomingCount = computed(() => (matches.value || []).length);
 const runningCount = computed(() =>
   (matches.value || []).filter((match) => ['running', 'live', 'in_progress'].includes(String(match?.status || '').toLowerCase())).length,
