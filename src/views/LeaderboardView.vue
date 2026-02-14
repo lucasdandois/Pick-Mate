@@ -19,8 +19,8 @@
             <tr>
               <th class="pb-3">Top</th>
               <th class="pb-3">Joueur</th>
-              <th class="pb-3">Rang</th>
-              <th class="pb-3">Points</th>
+              <th class="pb-3 text-center">Rang</th>
+              <th class="pb-3 text-center">Points</th>
             </tr>
           </thead>
           <tbody>
@@ -28,13 +28,15 @@
               <td class="py-3">{{ index + 1 }}</td>
               <td class="py-3">{{ player.display_name || 'Joueur' }}</td>
               <td class="py-3">
-                <img
-                  :src="getRankImage(player.total_points)"
-                  :alt="getRankName(player.total_points)"
-                  class="h-[56px] w-[56px] object-contain"
-                />
+                <div class="flex justify-center">
+                  <img
+                    :src="getRankImage(player.total_points)"
+                    :alt="getRankName(player.total_points)"
+                    class="h-[56px] w-[56px] object-contain"
+                  />
+                </div>
               </td>
-              <td class="py-3">{{ player.total_points ?? 0 }}</td>
+              <td class="py-3 text-center">{{ player.total_points ?? 0 }}</td>
             </tr>
           </tbody>
         </table>
