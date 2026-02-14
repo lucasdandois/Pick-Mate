@@ -1,9 +1,11 @@
 ﻿<template>
   <div class="flex min-h-screen flex-col bg-[#070707] text-zinc-100">
     <div class="fixed inset-0 pointer-events-none">
-      <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-400/15 blur-3xl animate-float-soft"></div>
-      <div class="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-fuchsia-500/10 blur-3xl"></div>
-      <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl animate-float-soft" style="animation-delay: 2s;"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(16,185,129,0.18),transparent_40%),radial-gradient(circle_at_82%_28%,rgba(217,70,239,0.14),transparent_42%),radial-gradient(circle_at_50%_88%,rgba(16,185,129,0.12),transparent_38%)]"></div>
+      <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-400/25 blur-3xl animate-float-soft"></div>
+      <div class="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-emerald-500/20 blur-3xl animate-float-soft" style="animation-delay: 2s;"></div>
+      <div class="absolute -bottom-10 right-1/4 h-72 w-72 rounded-full bg-fuchsia-400/15 blur-3xl animate-float-soft" style="animation-delay: 1s;"></div>
     </div>
 
     <nav class="relative z-20 border-b border-white/10 bg-black/60 backdrop-blur-xl">
