@@ -95,7 +95,8 @@
               <span
                 v-for="badge in getFilteredSeriesBadges(match)"
                 :key="badge"
-                class="rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-fuchsia-200"
+                class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                :class="getSeriesBadgeClass(badge)"
               >
                 {{ badge }}
               </span>
@@ -249,7 +250,7 @@ const getGamePills = (match) => {
   if (name.includes('call of duty') || name.includes('cod') || name.includes('warzone')) {
     pills.push({
       label: 'CDL',
-      className: 'border-amber-400/50 bg-amber-500/10 text-amber-200',
+      className: 'border-indigo-400/50 bg-indigo-500/10 text-indigo-200',
     });
   }
 
@@ -274,7 +275,7 @@ const getGamePills = (match) => {
   if (name.includes('counter-strike') || name.includes('cs2') || name === 'cs') {
     pills.push({
       label: 'CS',
-      className: 'border-indigo-400/50 bg-indigo-500/10 text-indigo-200',
+      className: 'border-amber-400/50 bg-amber-500/10 text-amber-200',
     });
   }
 
@@ -287,6 +288,13 @@ const getFilteredSeriesBadges = (match) => {
   if (isGC) return ['GC'];
   const isVctEmea = seriesText.includes('vct') && seriesText.includes('emea');
   return getSeriesBadges(match).filter((badge) => badge === 'VCT' && isVctEmea);
+};
+
+const getSeriesBadgeClass = (badge) => {
+  if (badge === 'VCT') {
+    return 'border-red-400/50 bg-red-500/10 text-red-200';
+  }
+  return 'border-fuchsia-400/40 bg-fuchsia-500/10 text-fuchsia-200';
 };
 
 const getScoreOptions = (match, pickedTeamId) => {

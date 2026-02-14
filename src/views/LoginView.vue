@@ -113,6 +113,24 @@
               class="rounded-xl border border-white/10 bg-black/40 p-3"
             >
               <p class="text-sm font-semibold text-white">{{ item.title }}</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="pill in item.gamePills || []"
+                  :key="`pending-pill-${item.id}-${pill.label}`"
+                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                  :class="pill.className"
+                >
+                  {{ pill.label }}
+                </span>
+                <span
+                  v-for="badge in item.seriesBadges || []"
+                  :key="`pending-badge-${item.id}-${badge}`"
+                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                  :class="getSeriesBadgeClass(badge)"
+                >
+                  {{ badge }}
+                </span>
+              </div>
               <p class="mt-1 text-xs text-zinc-400">{{ item.meta }}</p>
               <p class="mt-1 text-xs text-zinc-500">{{ item.date }}</p>
               <p class="mt-2 text-xs uppercase tracking-[0.2em] text-emerald-300">
@@ -143,13 +161,31 @@
                   ? 'border-red-500/50'
                   : 'border-white/10'"
             >
-              <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center justify-between gap-3">
                 <div>
                   <p class="text-sm font-semibold text-white">{{ item.title }}</p>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <span
+                      v-for="pill in item.gamePills || []"
+                      :key="`month-pill-${item.id}-${pill.label}`"
+                      class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                      :class="pill.className"
+                    >
+                      {{ pill.label }}
+                    </span>
+                    <span
+                      v-for="badge in item.seriesBadges || []"
+                      :key="`month-badge-${item.id}-${badge}`"
+                      class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]"
+                      :class="getSeriesBadgeClass(badge)"
+                    >
+                      {{ badge }}
+                    </span>
+                  </div>
                   <p class="mt-1 text-xs text-zinc-400">{{ item.date }}</p>
                 </div>
                 <p
-                  class="text-lg font-semibold uppercase tracking-[0.08em] text-right"
+                  class="min-w-[110px] text-center text-lg font-normal uppercase tracking-[0.08em]"
                   :class="item.points > 0 ? 'text-emerald-300' : item.points < 0 ? 'text-red-300' : 'text-zinc-400'"
                 >
                   {{ item.points > 0 ? '+' : '' }}{{ item.points }} pts
@@ -253,7 +289,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { formatDisplayName, useAuth, usePickHistory } from '../services/pickemCore';
+import { formatDisplayName, getSeriesBadgeClass, useAuth, usePickHistory } from '../services/pickemCore';
 
 const { user, profile, loading, error, signIn, signUp, signOut } = useAuth();
 const { history, totalPoints, loading: loadingHistory, error: historyError, refresh } = usePickHistory();

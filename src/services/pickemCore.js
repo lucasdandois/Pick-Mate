@@ -589,6 +589,8 @@ export function usePickHistory() {
         date: match ? formatMatchDate(match.begin_at) : 'Date TBD',
         beginAt: match?.begin_at || null,
         status: match?.status || '',
+        gamePills: match ? getGamePills(match) : [],
+        seriesBadges: match ? getFilteredSeriesBadges(match) : [],
         pick: picked?.name || '—',
         confirmed: Boolean(confirmed.value?.[matchId]),
         points,
@@ -709,6 +711,58 @@ export function getSeriesBadges(match) {
   if (text.includes('vct')) badges.push('VCT');
   if (text.includes('gc')) badges.push('GC');
   return badges;
+}
+
+export function getGamePills(match) {
+  const name = (match?.videogame?.name || '').toLowerCase();
+  const pills = [];
+
+  if (name.includes('call of duty') || name.includes('cod') || name.includes('warzone')) {
+    pills.push({
+      label: 'CDL',
+      className: 'border-indigo-400/50 bg-indigo-500/10 text-indigo-200',
+    });
+  }
+
+  if (name.includes('valorant')) {
+    const seriesText = `${match?.league?.name ?? ''} ${match?.serie?.name ?? ''} ${match?.tournament?.name ?? ''}`.toLowerCase();
+    const isGC = seriesText.includes('game changers');
+    if (isGC) {
+      pills.push({
+        label: 'GC',
+        className: 'border-fuchsia-400/50 bg-fuchsia-500/10 text-fuchsia-200',
+      });
+    }
+  }
+
+  if (name.includes('rocket league')) {
+    pills.push({
+      label: 'RL',
+      className: 'border-sky-400/50 bg-sky-500/10 text-sky-200',
+    });
+  }
+
+  if (name.includes('counter-strike') || name.includes('cs2') || name === 'cs') {
+    pills.push({
+      label: 'CS',
+      className: 'border-amber-400/50 bg-amber-500/10 text-amber-200',
+    });
+  }
+
+  return pills;
+}
+
+export function getFilteredSeriesBadges(match) {
+  const seriesText = `${match?.league?.name ?? ''} ${match?.serie?.name ?? ''} ${match?.tournament?.name ?? ''}`.toLowerCase();
+  const isGC = seriesText.includes('game changers') || seriesText.includes('gc');
+  if (isGC) return ['GC'];
+  const isVctEmea = seriesText.includes('vct') && seriesText.includes('emea');
+  return getSeriesBadges(match).filter((badge) => badge === 'VCT' && isVctEmea);
+}
+
+export function getSeriesBadgeClass(badge) {
+  if (badge === 'VCT') return 'border-red-400/50 bg-red-500/10 text-red-200';
+  return 'border-fuchsia-400/40 bg-fuchsia-500/10 text-fuchsia-200';
 }
 
 export function getMatchScoreline(match) {
@@ -1054,3 +1108,4 @@ async function fetchTeamsBySearch(field, value) {
 
   return Array.isArray(pageData) ? pageData : [];
 }
+
