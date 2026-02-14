@@ -31,7 +31,7 @@
                 <img
                   :src="getRankImage(player.total_points)"
                   :alt="getRankName(player.total_points)"
-                  class="h-[46px] w-[46px] object-contain"
+                  class="h-[56px] w-[56px] object-contain"
                 />
               </td>
               <td class="py-3">{{ player.total_points ?? 0 }}</td>
