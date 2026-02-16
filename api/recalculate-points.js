@@ -58,7 +58,9 @@ async function fetchMatchById(matchId, token) {
 function authorized(req) {
   const cronSecret = process.env.CRON_SECRET;
   const bearer = req.headers.authorization || '';
+  const querySecret = req.query?.secret;
   if (cronSecret && bearer === `Bearer ${cronSecret}`) return true;
+  if (cronSecret && querySecret === cronSecret) return true;
   if (req.headers['x-vercel-cron']) return true;
   return !cronSecret;
 }
