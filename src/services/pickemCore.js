@@ -561,6 +561,44 @@ export function usePickemBoard() {
   };
 }
 
+export async function saveConfirmedPickToDatabase({ matchId, pickedTeamId, scorePick, match }) {
+  const supabase = getSupabase();
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  const userId = sessionData?.session?.user?.id;
+  if (!userId) throw new Error('Utilisateur non connecte');
+
+  const numericMatchId = Number(matchId);
+  const numericPickedTeamId = Number(pickedTeamId);
+  if (!Number.isFinite(numericMatchId) || !Number.isFinite(numericPickedTeamId)) {
+    throw new Error('Pick invalide');
+  }
+
+  const opponents = getOpponents(match || {});
+  const teamAId = Number(scorePick?.teamAId || opponents?.[0]?.id || 0);
+  const teamBId = Number(scorePick?.teamBId || opponents?.[1]?.id || 0);
+  const scoreA = Number.isFinite(Number(scorePick?.scoreA)) ? Number(scorePick.scoreA) : null;
+  const scoreB = Number.isFinite(Number(scorePick?.scoreB)) ? Number(scorePick.scoreB) : null;
+
+  const payload = {
+    user_id: userId,
+    match_id: numericMatchId,
+    pick_team_id: numericPickedTeamId,
+    team_a_id: Number.isFinite(teamAId) && teamAId > 0 ? teamAId : null,
+    team_b_id: Number.isFinite(teamBId) && teamBId > 0 ? teamBId : null,
+    score_a: scoreA,
+    score_b: scoreB,
+    status: 'confirmed',
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await supabase
+    .from('user_picks')
+    .upsert(payload, { onConflict: 'user_id,match_id' });
+  if (error) throw error;
+  return true;
+}
+
 export function usePickHistory() {
   const { matches, loading, error, refresh } = useMonthlyMatches();
   const picks = ref(loadPicks());

@@ -1,4 +1,7 @@
 {
+  "crons": [
+    { "path": "/api/recalculate-points", "schedule": "0 * * * *" }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

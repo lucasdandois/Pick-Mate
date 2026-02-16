@@ -174,6 +174,7 @@ import {
   getSeriesBadges,
   getOpponents,
   isMatchStarted,
+  saveConfirmedPickToDatabase,
   useAuth,
   usePickemBoard,
   useCalendarFilters,
@@ -235,12 +236,25 @@ onMounted(scrollToRouteMatch);
 watch(() => route.query?.matchId, scrollToRouteMatch);
 watch(unplayedMatches, scrollToRouteMatch, { deep: true });
 
-const handleConfirmPick = (matchId) => {
+const handleConfirmPick = async (matchId) => {
   if (!user.value) {
     router.push('/login?redirect=/pickem');
     return;
   }
-  confirmPick(matchId);
+  const match = (filteredMatches.value || []).find((item) => Number(item.id) === Number(matchId));
+  const pickedTeamId = picks.value?.[matchId];
+  const scorePick = scorePicks.value?.[matchId];
+  try {
+    await saveConfirmedPickToDatabase({
+      matchId,
+      pickedTeamId,
+      scorePick,
+      match,
+    });
+    confirmPick(matchId);
+  } catch (err) {
+    console.error('Save pick failed', err);
+  }
 };
 
 const getGamePills = (match) => {
